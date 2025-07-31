@@ -1,0 +1,104 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Energy-themed design system with vibrant colors and gradients */
+
+@layer base {
+  :root {
+    --background: 210 30% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 210 30% 12%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 210 30% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 120 70% 50%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 30% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 210 30% 18%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 60 90% 60%;
+    --accent-foreground: 210 30% 8%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 210 30% 18%;
+    --input: 210 30% 18%;
+    --ring: 120 70% 50%;
+
+    --radius: 0.75rem;
+
+    --energy-green: 120 70% 50%;
+    --energy-blue: 200 80% 60%;
+    --energy-yellow: 60 90% 60%;
+    --energy-orange: 25 95% 63%;
+    --energy-purple: 260 80% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, hsl(210 30% 8%) 0%, hsl(210 40% 6%) 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .energy-gradient {
+    background: linear-gradient(135deg, hsl(var(--energy-green)) 0%, hsl(var(--energy-blue)) 50%, hsl(var(--energy-purple)) 100%);
+  }
+  
+  .energy-glow {
+    box-shadow: 0 0 20px hsl(var(--energy-green) / 0.3);
+  }
+  
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@keyframes pulse-energy {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-pulse-energy {
+  animation: pulse-energy 2s ease-in-out infinite;
+}
+
+.animate-float-up {
+  animation: float-up 0.6s ease-out forwards;
+}
