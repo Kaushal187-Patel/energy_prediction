@@ -44,6 +44,29 @@ def predict():
         features['Outdoor Temperature (°C)'] = data.get('temperature', 25)
         features['Household Size'] = data.get('householdSize', 4)
         
+        # Device usage impact
+        devices = data.get('devices', [])
+        total_device_impact = 0
+        for device in devices:
+            device_type = device.get('device', 'AC')
+            usage_minutes = device.get('hours', 480)
+            
+            # Device power consumption multipliers (kWh per hour)
+            device_multipliers = {
+                'AC': 2.5,
+                'TV': 0.15,
+                'Refrigerator': 0.4,
+                'WashingMachine': 1.5,
+                'Heater': 3.0,
+                'Lights': 0.1
+            }
+            
+            multiplier = device_multipliers.get(device_type, 1.0)
+            total_device_impact += (usage_minutes / 60) * multiplier
+        
+        # Add device impact to temperature (simulating increased energy need)
+        features['Outdoor Temperature (°C)'] += total_device_impact * 0.5
+        
         # Time-based features
         if 'startTime' in data:
             hour = int(data['startTime'].split(':')[0])
@@ -81,10 +104,10 @@ def predict():
         # Create feature array in correct order
         feature_array = np.array([features.get(col, 0) for col in feature_cols]).reshape(1, -1)
         
-        # Make predictions
-        lr_pred = lr_model.predict(feature_array)[0]
-        knn_pred = knn_model.predict(feature_array)[0]
-        rf_pred = rf_model.predict(feature_array)[0]
+        # Make predictions and add device impact
+        lr_pred = lr_model.predict(feature_array)[0] + total_device_impact
+        knn_pred = knn_model.predict(feature_array)[0] + total_device_impact
+        rf_pred = rf_model.predict(feature_array)[0] + total_device_impact
         
         return jsonify({
             'linear_regression': float(lr_pred),

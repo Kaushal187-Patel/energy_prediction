@@ -12,11 +12,20 @@ import Home from "./pages/Home";
 import Insights from "./pages/Insights";
 import NotFound from "./pages/NotFound";
 import Predict from "./pages/Predict";
+import Team from "./pages/Team";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const location = useLocation();
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+      offset: 100
+    });
+  }, []);
+  
   useEffect(() => {
     AOS.refresh();
   }, [location]);
@@ -33,6 +42,7 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/about" element={<About />} />
+            <Route path="/team" element={<Team />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

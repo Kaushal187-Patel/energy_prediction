@@ -141,8 +141,8 @@ const Predict = () => {
         const dayTypeImpact =
           dayType === "weekend" || dayOfWeek === 0 || dayOfWeek === 6 ? 12 : 8;
         const deviceImpact = devices.reduce((total, d) => {
-          const deviceMultiplier = d.device === 'AC' ? 3 : d.device === 'TV' ? 1.5 : d.device === 'Refrigerator' ? 2 : 1;
-          return total + (d.hours * deviceMultiplier);
+          const deviceMultiplier = d.device === 'AC' ? 0.3 : d.device === 'TV' ? 0.15 : d.device === 'Refrigerator' ? 0.2 : 0.1;
+          return total + (d.hours * deviceMultiplier / 10);
         }, 0);
         const startHour = parseInt(startTime.split(":")[0], 10);
         const endHour = parseInt(endTime.split(":")[0], 10);
@@ -181,6 +181,32 @@ const Predict = () => {
             prediction: rfPrediction,
           },
         ]);
+        
+        // Store prediction in database
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            await fetch('http://localhost:5000/api/store-prediction', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                temperature,
+                householdSize,
+                season,
+                date,
+                devices,
+                predictedConsumption: rfPrediction,
+                modelUsed: 'Random Forest',
+                confidence: Math.round(data.model_scores.random_forest * 100)
+              })
+            });
+          } catch (error) {
+            console.log('Failed to store prediction:', error);
+          }
+        }
       } else {
         const errorData = await response.json();
         alert(`Prediction failed: ${errorData.error || "Unknown error"}`);
@@ -198,7 +224,7 @@ const Predict = () => {
     <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-8 sm:mb-12">
+        <div className="text-center mb-8 sm:mb-12" data-aos="fade-up" data-aos-duration="1000">
           <div className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-green-500/20 text-green-400 text-xs sm:text-sm font-medium mb-4 sm:mb-6">
             <Database className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
             {apiStatus}
@@ -213,7 +239,7 @@ const Predict = () => {
         </div>
 
         {/* Input Form */}
-        <section className="mb-6 sm:mb-8">
+        <section className="mb-6 sm:mb-8" data-aos="fade-up" data-aos-duration="1000">
           <Card className="bg-white/5 border-white/10">
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-lg sm:text-xl">Input Parameters</CardTitle>
@@ -453,7 +479,7 @@ const Predict = () => {
 
         {/* Prediction Results */}
         {prediction && (
-          <section>
+          <section data-aos="fade-up" data-aos-duration="1000">
             <Card className="bg-white/5 border-white/10">
               <CardHeader className="p-4 sm:p-6">
                 <CardTitle className="text-lg sm:text-xl">
@@ -506,7 +532,7 @@ const Predict = () => {
 
         {/* Model Comparison */}
         {comparison.length > 0 && (
-          <section className="mt-6 sm:mt-8">
+          <section className="mt-6 sm:mt-8" data-aos="fade-up" data-aos-duration="1000">
             <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
               Model Comparison
             </h3>

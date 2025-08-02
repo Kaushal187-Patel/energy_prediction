@@ -84,10 +84,10 @@ const Home = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-float-up">
-              <Link to="/predict">
+              <Link to="/predict" className="pointer-events-auto">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 energy-glow"
+                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 energy-glow pointer-events-auto cursor-pointer"
                 >
                   Start Predicting
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -179,10 +179,10 @@ const Home = () => {
               Join thousands of users who are already saving money and reducing
               their carbon footprint.
             </p>
-            <Link to="/predict">
+            <Link to="/predict" className="pointer-events-auto">
               <Button
                 size="lg"
-                className="energy-gradient text-white font-semibold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                className="energy-gradient text-white font-semibold px-10 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 pointer-events-auto cursor-pointer"
               >
                 Get Started Today
                 <BarChart3 className="ml-2 h-5 w-5" />

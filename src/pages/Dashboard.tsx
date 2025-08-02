@@ -181,6 +181,35 @@ const Dashboard = () => {
           ))}
         </div>
 
+        {/* Energy Analysis Results */}
+        <Card 
+          className="bg-white/5 border-white/10 mb-8"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
+          <CardHeader>
+            <CardTitle className="text-white text-xl">
+              Energy Analysis Results
+            </CardTitle>
+            <p className="text-gray-300 text-sm">
+              Comprehensive analysis of energy consumption patterns and predictions
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="relative group">
+              <img
+                src="/energy_analysis_results.png"
+                alt="Energy Analysis Results"
+                className="w-full h-auto rounded-lg border border-white/10 group-hover:border-green-400/30 transition-all duration-300 shadow-lg"
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Charts */}
         <Tabs
           defaultValue="weekly"

@@ -10,13 +10,27 @@ const About = () => {
   return (
     <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <HeroSection data-aos="fade-up" data-aos-duration="1000" />
-        <DatasetInfo data-aos="fade-up" data-aos-duration="1000" />
-        <MLModels data-aos="fade-up" data-aos-duration="1000" />
-        <PlatformFeatures data-aos="fade-up" data-aos-duration="1000" />
-        <ProcessFlow data-aos="fade-up" data-aos-duration="1000" />
-        <TechStack data-aos="fade-up" data-aos-duration="1000" />
-        <PlatformStats data-aos="fade-up" data-aos-duration="1000" />
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <HeroSection />
+        </div>
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <DatasetInfo />
+        </div>
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <MLModels />
+        </div>
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <PlatformFeatures />
+        </div>
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <ProcessFlow />
+        </div>
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <TechStack />
+        </div>
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <PlatformStats />
+        </div>
       </div>
     </div>
   );
