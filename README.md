@@ -12,12 +12,28 @@ This project implements regression and machine learning models to predict daily 
 ## 📁 Project Structure
 
 ```
-energy_consumption_prediction/
-├── energy_prediction.py      # Main ML prediction system
-├── data_analysis.py          # Comprehensive data analysis module
-├── run_analysis.py           # Complete demo script
-├── requirements.txt          # Python dependencies
-└── README.md                # This file
+energyAI/
+├── frontend/          # Next.js React app
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── ...
+│   ├── public/
+│   ├── package.json
+│   └── ...other frontend files
+├── backend/           # Node.js Express API
+│   ├── src/
+│   │   └── server.js
+│   ├── package.json
+│   ├── database.db
+│   └── database_schema.sql
+├── ml-model/          # ML model code
+│   ├── *.pkl         # Trained models
+│   ├── predict_api.py
+│   ├── train_models.py
+│   └── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
 ## 🚀 Quick Start
@@ -25,28 +41,51 @@ energy_consumption_prediction/
 ### 1. Install Dependencies
 
 ```bash
-# Navigate to project directory
-cd energy_consumption_prediction
+# Frontend (Next.js)
+cd frontend
+npm install
 
-# Install required packages
+# Backend (Node.js)
+cd ../backend
+npm install
+
+# ML Model (Python)
+cd ../ml-model
 pip install -r requirements.txt
 ```
 
-### 2. Run the Complete Analysis
+### 2. Run All Services (Single Command)
 
 ```bash
-# Run the full analysis pipeline
-python run_analysis.py
+# Option 1: Using npm (install concurrently first)
+npm install
+npm start
+
+# Option 2: Using batch file (Windows)
+start.bat
 ```
 
-### 3. Run Individual Components
+### 3. Run Individual Services
 
 ```bash
-# Run just the ML prediction models
-python energy_prediction.py
+# Start Frontend (in frontend directory)
+npm run dev
 
-# Or use the modules in your own code
-python -c "from energy_prediction import EnergyConsumptionPredictor; predictor = EnergyConsumptionPredictor()"
+# Start Backend (in backend directory)
+npm start
+
+# Run ML predictions (in ml-model directory)
+python predict_api.py
+```
+
+### 3. Development Mode
+
+```bash
+# Frontend development server
+cd frontend && npm run dev
+
+# Backend development server
+cd backend && npm run dev
 ```
 
 ## 📊 Features
