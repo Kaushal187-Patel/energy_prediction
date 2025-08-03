@@ -71,7 +71,6 @@ export default function LoginModal({ onClose, onLogin }: LoginModalProps) {
         if (isLogin) {
           toast.success('Login successful!');
           onLogin(data.user);
-          navigate('/dashboard');
         } else {
           toast.success('Account created! Please login.');
           setIsLogin(true);

@@ -23,8 +23,12 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import LoginModal from "@/components/LoginModal";
 
 const Predict = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const [user, setUser] = useState<any>(null);
   const [temperature, setTemperature] = useState<number>(20);
   const [timeOfDay, setTimeOfDay] = useState<number>(12);
   const [dayType, setDayType] = useState<string>("weekday");
@@ -55,8 +59,24 @@ const Predict = () => {
   const [apiStatus, setApiStatus] = useState<string>("Checking API...");
 
   useEffect(() => {
-    checkApiStatus();
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      setIsAuthenticated(true);
+      setUser(JSON.parse(userData));
+      checkApiStatus();
+    } else {
+      setShowLoginModal(true);
+    }
   }, []);
+
+  const handleLogin = (userData: any) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+    setShowLoginModal(false);
+    checkApiStatus();
+  };
 
   const checkApiStatus = async () => {
     try {
@@ -219,6 +239,14 @@ const Predict = () => {
 
     setIsLoading(false);
   };
+
+  if (showLoginModal) {
+    return <LoginModal onClose={() => setShowLoginModal(false)} onLogin={handleLogin} />;
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 lg:px-8">

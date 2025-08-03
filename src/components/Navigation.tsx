@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -30,6 +30,26 @@ const Navigation = () => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(JSON.parse(localStorage.getItem('user') || 'null'));
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    const interval = setInterval(() => {
+      const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+      if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
+        setUser(currentUser);
+      }
+    }, 100);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');

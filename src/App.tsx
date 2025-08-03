@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AOS from "aos";
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
 import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
@@ -34,17 +35,20 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <div className="min-h-screen">
+        <div className="min-h-screen flex flex-col">
           <Navigation />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/predict" element={<Predict />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/team" element={<Team />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/predict" element={<Predict />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
         </div>
       </TooltipProvider>
     </QueryClientProvider>
