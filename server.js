@@ -15,7 +15,27 @@ app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URI
+  connectionString: process.env.DATABASE_URI,
+  ssl: false,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+// Test database connection
+pool.on('error', (err) => {
+  console.error('Database connection error:', err);
+});
+
+// Test connection on startup
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('Error connecting to database:', err.message);
+    console.log('Please ensure PostgreSQL is running and credentials are correct');
+  } else {
+    console.log('Database connected successfully');
+    release();
+  }
 });
 
 // Create users table if not exists
