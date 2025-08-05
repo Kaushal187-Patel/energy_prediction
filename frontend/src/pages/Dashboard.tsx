@@ -1,15 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DollarSign,
-  Download,
-  Leaf,
-  RefreshCw,
-  TrendingDown,
-  TrendingUp,
-  Zap,
-} from "lucide-react";
+import { DollarSign, Leaf, TrendingDown, TrendingUp, Zap } from "lucide-react";
 import { useState } from "react";
 import {
   Bar,
@@ -112,7 +103,7 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="flex space-x-3 mt-4 sm:mt-0">
-            <Button
+            {/* <Button
               variant="outline"
               onClick={handleRefresh}
               disabled={isLoading}
@@ -124,11 +115,11 @@ const Dashboard = () => {
                 <RefreshCw className="h-4 w-4 mr-2" />
               )}
               Refresh
-            </Button>
-            <Button className="energy-gradient text-white">
+            </Button> */}
+            {/* <Button className="energy-gradient text-white">
               <Download className="h-4 w-4 mr-2" />
               Export Data
-            </Button>
+            </Button> */}
           </div>
         </div>
 
@@ -182,7 +173,7 @@ const Dashboard = () => {
         </div>
 
         {/* Energy Analysis Results */}
-        <Card 
+        <Card
           className="bg-white/5 border-white/10 mb-8"
           data-aos="fade-up"
           data-aos-duration="1000"
@@ -192,7 +183,8 @@ const Dashboard = () => {
               Energy Analysis Results
             </CardTitle>
             <p className="text-gray-300 text-sm">
-              Comprehensive analysis of energy consumption patterns and predictions
+              Comprehensive analysis of energy consumption patterns and
+              predictions
             </p>
           </CardHeader>
           <CardContent>

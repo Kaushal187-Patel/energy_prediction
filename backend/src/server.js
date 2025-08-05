@@ -89,7 +89,7 @@ app.post('/api/signup', async (req, res) => {
     );
     
     console.log('User created successfully:', result.rows[0]);
-    const token = jwt.sign({ userId: result.rows[0].id }, process.env.PAYLOAD_SECRET);
+    const token = jwt.sign({ userId: result.rows[0].id }, process.env.JWT_SECRET);
     res.json({ token, user: result.rows[0] });
   } catch (error) {
     console.error('Signup error:', error);
@@ -122,7 +122,7 @@ app.post('/api/login', async (req, res) => {
     }
     
     console.log('Login successful for user:', user.email);
-    const token = jwt.sign({ userId: user.id }, process.env.PAYLOAD_SECRET);
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
     res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
     console.error('Login error:', error);
@@ -140,7 +140,7 @@ app.post('/api/store-prediction', async (req, res) => {
     let userId = null;
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.PAYLOAD_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userId = decoded.userId;
         console.log('User ID from token:', userId);
       } catch (error) {
@@ -174,7 +174,7 @@ app.get('/api/predictions', async (req, res) => {
       return res.status(401).json({ error: 'No token provided' });
     }
     
-    const decoded = jwt.verify(token, process.env.PAYLOAD_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     const result = await pool.query(
       'SELECT * FROM predictions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10',

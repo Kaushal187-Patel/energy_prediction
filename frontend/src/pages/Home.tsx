@@ -5,7 +5,6 @@ import {
   BarChart3,
   Brain,
   Lightbulb,
-  Play,
   Shield,
   TrendingUp,
   Zap,
@@ -16,7 +15,7 @@ import { Link } from "react-router-dom";
 const Home = () => {
   const [currentStat, setCurrentStat] = useState(0);
   const stats = [
-    { value: "95%", label: "Prediction Accuracy" },
+    { value: "85%", label: "Prediction Accuracy" },
     { value: "2.4kWh", label: "Average Daily Savings" },
     { value: "15K+", label: "Homes Optimized" },
     { value: "40%", label: "Energy Cost Reduction" },

@@ -194,7 +194,7 @@ const Navigation = () => {
       </div>
       
       <Dialog open={showLogin} onOpenChange={setShowLogin}>
-        <DialogContent className="max-w-none w-full h-full p-0 bg-black/50 backdrop-blur-sm">
+        <DialogContent className="max-w-none w-full h-full p-0 bg-transparent backdrop-blur-sm">
           <LoginModal onClose={() => setShowLogin(false)} onLogin={(userData) => { setUser(userData); setShowLogin(false); }} />
         </DialogContent>
       </Dialog>

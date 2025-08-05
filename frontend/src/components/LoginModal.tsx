@@ -91,8 +91,14 @@ export default function LoginModal({ onClose, onLogin }: LoginModalProps) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <Card className="w-full max-w-md">
+    <div 
+      className="flex items-center justify-center min-h-screen p-4"
+      onClick={onClose}
+    >
+      <Card 
+        className="w-full max-w-md"
+        onClick={(e) => e.stopPropagation()}
+      >
         <CardHeader>
           <CardTitle className="text-2xl text-center">
             {isLogin ? 'Login' : 'Sign Up'}
