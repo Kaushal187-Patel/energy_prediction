@@ -29,7 +29,15 @@ const Predict = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [user, setUser] = useState<any>(null);
-  const [temperature, setTemperature] = useState<number>(20);
+  const [temperature, setTemperature] = useState<number | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState<boolean>(false);
+  const [weatherData, setWeatherData] = useState<any>(null);
+  const [autoMode, setAutoMode] = useState<boolean>(false);
+  const [realTimeData, setRealTimeData] = useState<any>(null);
+  const [locationData, setLocationData] = useState<any>(null);
+  const [energyTips, setEnergyTips] = useState<string[]>([]);
+  const [peakHours, setPeakHours] = useState<any>(null);
+  const [costEstimate, setCostEstimate] = useState<number>(0);
   const [timeOfDay, setTimeOfDay] = useState<number>(12);
   const [dayType, setDayType] = useState<string>("weekday");
   const [devices, setDevices] = useState<{device: string, hours: number}[]>([{device: "AC", hours: 480}]);
@@ -66,10 +74,131 @@ const Predict = () => {
       setIsAuthenticated(true);
       setUser(JSON.parse(userData));
       checkApiStatus();
+      setCurrentDateTime();
     } else {
       setShowLoginModal(true);
     }
   }, []);
+
+  useEffect(() => {
+    fetchEnergyTips();
+    fetchPeakHours();
+    calculateCostEstimate();
+  }, [temperature, season, householdSize, devices]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (autoMode) {
+      interval = setInterval(() => {
+        fetchCurrentWeather();
+        setCurrentDateTime();
+        fetchRealTimeData();
+        fetchEnergyTips();
+        fetchPeakHours();
+        calculateCostEstimate();
+      }, 30000);
+    }
+    return () => clearInterval(interval);
+  }, [autoMode, temperature, season, householdSize, devices]);
+
+  const setCurrentDateTime = () => {
+    const now = new Date();
+    setDate(now.toISOString().split('T')[0]);
+    setStartTime(now.toTimeString().slice(0, 5));
+    setSeason(getCurrentSeason());
+  };
+
+  const getCurrentSeason = () => {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 5) return 'Spring';
+    if (month >= 6 && month <= 8) return 'Summer';
+    if (month >= 9 && month <= 11) return 'Autumn';
+    return 'Winter';
+  };
+
+  const fetchRealTimeData = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/analytics/efficiency', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setRealTimeData(data);
+      }
+    } catch (error) {
+      console.log('Real-time data fetch failed');
+    }
+  };
+
+  const fetchLocationData = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocationData({ lat: latitude, lon: longitude });
+        try {
+          const response = await fetch(`http://localhost:3001/api/weather/current?lat=${latitude}&lon=${longitude}`);
+          if (response.ok) {
+            const weather = await response.json();
+            setTemperature(Math.round(weather.temperature));
+            setWeatherData(weather);
+          }
+        } catch (error) {
+          console.log('Location weather fetch failed');
+        }
+      });
+    }
+  };
+
+  const fetchEnergyTips = () => {
+    const tips = [
+      `At ${temperature}°C, set AC to ${temperature + 2}°C to save 10% energy`,
+      `Peak hours 6-9 PM. Shift heavy appliances to save costs`,
+      `${season}: Use natural ventilation when possible`,
+      `Household ${householdSize}: LED bulbs save ₹500/month`,
+      `Current weather ideal for air drying clothes`
+    ];
+    setEnergyTips(tips.slice(0, 3));
+  };
+
+  const fetchPeakHours = () => {
+    const currentHour = new Date().getHours();
+    const isPeak = currentHour >= 18 && currentHour <= 21;
+    setPeakHours({
+      current: currentHour,
+      isPeak,
+      rate: isPeak ? '₹8.5/kWh' : '₹5.2/kWh'
+    });
+  };
+
+  const calculateCostEstimate = () => {
+    const baseRate = peakHours?.isPeak ? 8.5 : 5.2;
+    const deviceCost = devices.reduce((total, device) => {
+      const rates = { AC: 2.5, TV: 0.15, Refrigerator: 0.4, WashingMachine: 1.5, Heater: 3.0, Lights: 0.1 };
+      return total + ((rates[device.device as keyof typeof rates] || 1) * (device.hours / 60) * baseRate);
+    }, 0);
+    setCostEstimate(Math.round(deviceCost * 100) / 100);
+  };
+
+  const fetchCurrentWeather = async () => {
+    setWeatherLoading(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/weather/current');
+      if (response.ok) {
+        const weather = await response.json();
+        console.log('Weather data:', weather);
+        const newTemp = Math.round(weather.temperature);
+        console.log('Setting temperature to:', newTemp);
+        setTemperature(newTemp);
+        setWeatherData(weather);
+      } else {
+        setTemperature(25);
+      }
+    } catch (error) {
+      console.log('Weather fetch error:', error);
+      setTemperature(25);
+    }
+    setWeatherLoading(false);
+  };
 
   const handleLogin = (userData: any) => {
     setUser(userData);
@@ -124,6 +253,11 @@ const Predict = () => {
   const handlePredict = async () => {
     if (!dataLoaded) {
       alert("ML API is not available. Please start predict_api.py");
+      return;
+    }
+
+    if (temperature === null) {
+      alert("Please click 'Current Weather' to get temperature first");
       return;
     }
 
@@ -312,23 +446,46 @@ const Predict = () => {
 
                 {/* Outdoor Temperature */}
                 <div>
-                  <div className="flex items-center mb-2">
-                    <Thermometer className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-                    <label
-                      htmlFor="temperature"
-                      className="text-gray-200 text-xs sm:text-sm font-medium"
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <Thermometer className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
+                      <label
+                        htmlFor="temperature"
+                        className="text-gray-200 text-xs sm:text-sm font-medium"
+                      >
+                        Temperature (°C): {temperature !== null ? temperature : 'Click Current Weather'}
+                      </label>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={fetchCurrentWeather}
+                      disabled={weatherLoading}
+                      className="text-xs"
                     >
-                      Temperature (°C): {temperature}
-                    </label>
+                      {weatherLoading ? 'Loading...' : 'Current Weather'}
+                    </Button>
                   </div>
+                  {weatherData && (
+                    <div className="text-xs text-gray-400 mb-2">
+                      🌡️ {weatherData.temperature}°C, {weatherData.description}, 💧 {weatherData.humidity}%, 🌬️ {weatherData.windSpeed}m/s
+                    </div>
+                  )}
+                  {!weatherData && (
+                    <div className="text-xs text-yellow-400 mb-2">
+                      ⚠️ Click "Current Weather" to get real temperature from your location
+                    </div>
+                  )}
                   <Slider
                     id="temperature"
-                    defaultValue={[20]}
+                    value={[temperature || 20]}
                     max={40}
                     min={5}
                     step={1}
                     onValueChange={(value) => setTemperature(value[0])}
                     className="mb-4"
+                    disabled={temperature === null}
                   />
                 </div>
 
@@ -464,6 +621,170 @@ const Predict = () => {
                 ))}
               </div>
 
+              {/* Auto Mode Toggle */}
+              <div className="flex items-center justify-between mt-4 p-3 bg-white/5 rounded-lg">
+                <div>
+                  <label className="text-gray-200 text-sm font-medium">Auto Mode</label>
+                  <p className="text-xs text-gray-400">Automatically update data every 30 seconds</p>
+                </div>
+                <Button
+                  type="button"
+                  variant={autoMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setAutoMode(!autoMode)}
+                  className="text-xs"
+                >
+                  {autoMode ? 'ON' : 'OFF'}
+                </Button>
+              </div>
+
+              {/* Real-time Data Display */}
+              {realTimeData && (
+                <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <h4 className="text-sm font-medium text-green-400 mb-2">Live System Data</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="text-gray-300">Efficiency: <span className="text-green-400">{realTimeData.efficiency?.toFixed(1)}%</span></div>
+                    <div className="text-gray-300">Anomalies: <span className="text-yellow-400">{realTimeData.anomalies || 0}</span></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Location & Peak Hours */}
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-blue-400">Location</h4>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={fetchLocationData}
+                      className="text-xs"
+                    >
+                      Get Location
+                    </Button>
+                  </div>
+                  {locationData ? (
+                    <div className="text-xs text-gray-300">
+                      Lat: {locationData.lat.toFixed(2)}, Lon: {locationData.lon.toFixed(2)}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-gray-400">Click to get location</div>
+                  )}
+                </div>
+
+                {peakHours && (
+                  <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                    <h4 className="text-sm font-medium text-orange-400 mb-2">Peak Hours</h4>
+                    <div className="text-xs text-gray-300">
+                      <div>Status: {peakHours.isPeak ? 'Peak Time' : 'Off-Peak'}</div>
+                      <div>Rate: {peakHours.rate}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Cost & Tips */}
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {costEstimate > 0 && (
+                  <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                    <h4 className="text-sm font-medium text-purple-400 mb-2">Cost Estimate</h4>
+                    <div className="text-lg font-bold text-white">₹{costEstimate}</div>
+                    <div className="text-xs text-gray-400">Daily cost estimate</div>
+                  </div>
+                )}
+
+                {energyTips.length > 0 && (
+                  <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <h4 className="text-sm font-medium text-yellow-400 mb-2">Smart Tips</h4>
+                    <div className="space-y-1">
+                      {energyTips.map((tip, index) => (
+                        <div key={index} className="text-xs text-gray-300">• {tip}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Fill Buttons */}
+              <div className="mt-4">
+                <label className="text-gray-200 text-sm font-medium mb-2 block">Quick Fill</label>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setTemperature(25);
+                      setHouseholdSize(4);
+                      setSeason('Summer');
+                      setDevices([{device: 'AC', hours: 480}]);
+                    }}
+                    className="text-xs"
+                  >
+                    Summer Home
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setTemperature(15);
+                      setHouseholdSize(3);
+                      setSeason('Winter');
+                      setDevices([{device: 'Heater', hours: 600}]);
+                    }}
+                    className="text-xs"
+                  >
+                    Winter Home
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setTemperature(22);
+                      setHouseholdSize(2);
+                      setSeason('Spring');
+                      setDevices([{device: 'TV', hours: 300}, {device: 'Refrigerator', hours: 1440}]);
+                    }}
+                    className="text-xs"
+                  >
+                    Office Mode
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const now = new Date();
+                      const hour = now.getHours();
+                      const temp = hour < 6 || hour > 20 ? 18 : hour > 12 ? 28 : 24;
+                      setTemperature(temp);
+                      setCurrentDateTime();
+                      fetchCurrentWeather();
+                    }}
+                    className="text-xs"
+                  >
+                    Smart Auto
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setTemperature(35);
+                      setHouseholdSize(6);
+                      setSeason('Summer');
+                      setDevices([{device: 'AC', hours: 720}, {device: 'Refrigerator', hours: 1440}]);
+                    }}
+                    className="text-xs"
+                  >
+                    High Usage
+                  </Button>
+                </div>
+              </div>
+
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4 sm:mt-6">
                 <Button
@@ -499,6 +820,20 @@ const Predict = () => {
                 >
                   <Brain className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                   Retrain Models
+                </Button>
+                <Button
+                  onClick={() => {
+                    fetchCurrentWeather();
+                    fetchLocationData();
+                    fetchRealTimeData();
+                    fetchEnergyTips();
+                    fetchPeakHours();
+                    calculateCostEstimate();
+                  }}
+                  variant="outline"
+                  className="text-sm sm:text-base py-2 sm:py-3"
+                >
+                  Refresh All
                 </Button>
               </div>
             </CardContent>

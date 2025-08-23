@@ -1,7 +1,7 @@
 
 const PlatformStats = () => {
   const stats = [
-    { value: '95%', label: 'Prediction Accuracy' },
+    { value: '85%', label: 'Prediction Accuracy' },
     { value: '15K+', label: 'Homes Analyzed' },
     { value: '40%', label: 'Average Savings' },
     { value: '2.4M', label: 'kWh Optimized' }

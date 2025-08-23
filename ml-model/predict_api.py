@@ -4,7 +4,11 @@ import pickle
 import numpy as np
 import pandas as pd
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
+import requests
+import threading
+import time
+from advanced_models import AdvancedEnergyPredictor
 
 app = Flask(__name__)
 CORS(app)
@@ -119,6 +123,67 @@ def predict():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+# Initialize advanced predictor
+advanced_predictor = AdvancedEnergyPredictor()
+if not advanced_predictor.load_models():
+    print('Advanced models not found, using basic models only')
+
+@app.route('/predict/advanced', methods=['POST'])
+def predict_advanced():
+    try:
+        data = request.json
+        
+        # Create enhanced features
+        features = {
+            'temperature': data.get('temperature', 25),
+            'humidity': data.get('humidity', 60),
+            'hour': int(data.get('startTime', '12:00').split(':')[0]),
+            'day_of_week': datetime.now().weekday(),
+            'month': datetime.now().month,
+            'is_weekend': 1 if datetime.now().weekday() >= 5 else 0,
+            'is_peak_hour': 1 if 17 <= int(data.get('startTime', '12:00').split(':')[0]) <= 21 else 0
+        }
+        
+        # Multi-horizon predictions
+        if advanced_predictor.models:
+            predictions = advanced_predictor.predict_multi_horizon(features)
+            return jsonify(predictions)
+        else:
+            return jsonify({'error': 'Advanced models not available'}), 503
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/weather/current', methods=['GET'])
+def get_weather():
+    try:
+        # Mock weather data for demo
+        weather_data = {
+            'temperature': 25 + np.random.normal(0, 5),
+            'humidity': 60 + np.random.normal(0, 15),
+            'wind_speed': 5 + np.random.normal(0, 2),
+            'description': 'partly cloudy',
+            'timestamp': datetime.now().isoformat()
+        }
+        return jsonify(weather_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/anomaly/detect', methods=['POST'])
+def detect_anomalies():
+    try:
+        data = request.json
+        predictions = data.get('predictions', [])
+        
+        if advanced_predictor.models:
+            anomalies = advanced_predictor.detect_anomalies(predictions)
+            return jsonify({'anomalies': anomalies})
+        else:
+            return jsonify({'anomalies': []})
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 @app.route('/train', methods=['POST'])
 def train():
     try:
@@ -137,6 +202,11 @@ def train():
                 feature_cols = feature_info['feature_cols']
                 appliance_encoder = feature_info['appliance_encoder']
                 season_encoder = feature_info['season_encoder']
+            
+            # Also retrain advanced models
+            advanced_result = subprocess.run(['python', 'advanced_models.py'], capture_output=True, text=True)
+            if advanced_result.returncode == 0:
+                advanced_predictor.load_models()
             
             print('Models retrained and reloaded successfully!')
             print('New features:', feature_cols)

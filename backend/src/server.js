@@ -4,11 +4,23 @@ import jwt from 'jsonwebtoken';
 import pkg from 'pg';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import weatherService from './services/weatherService.js';
+import alertService from './services/alertService.js';
+import analyticsService from './services/analyticsService.js';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 const { Pool } = pkg;
 dotenv.config();
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
+});
 const port = 3001;
 
 app.use(cors());
@@ -72,6 +84,33 @@ pool.query(`
     predicted_consumption FLOAT,
     model_used VARCHAR(100),
     confidence FLOAT,
+    cost FLOAT DEFAULT 0,
+    carbon_footprint FLOAT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+// Create alerts table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS alerts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    type VARCHAR(50),
+    message TEXT,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+// Create user_settings table
+pool.query(`
+  CREATE TABLE IF NOT EXISTS user_settings (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) UNIQUE,
+    high_consumption_threshold FLOAT DEFAULT 200,
+    cost_threshold FLOAT DEFAULT 50,
+    normal_consumption FLOAT DEFAULT 150,
+    email_alerts BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
 `);
@@ -187,6 +226,112 @@ app.get('/api/predictions', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+// Weather endpoints
+app.get('/api/weather/current', async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+    const weather = await weatherService.getCurrentWeather(lat, lon);
+    res.json(weather);
+  } catch (error) {
+    res.status(500).json({ error: 'Weather service error' });
+  }
+});
+
+app.get('/api/weather/forecast', async (req, res) => {
+  try {
+    const { lat, lon, days = 5 } = req.query;
+    const forecast = await weatherService.getForecast(lat, lon, days);
+    res.json(forecast);
+  } catch (error) {
+    res.status(500).json({ error: 'Weather service error' });
+  }
+});
+
+// Analytics endpoints
+app.get('/api/analytics/insights', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const predictions = await pool.query(
+      'SELECT * FROM predictions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10',
+      [decoded.userId]
+    );
+    
+    const weather = await weatherService.getCurrentWeather();
+    const insights = analyticsService.generateInsights(predictions.rows, weather);
+    const recommendations = analyticsService.generateRecommendations(predictions.rows, weather);
+    
+    res.json({ insights, recommendations });
+  } catch (error) {
+    res.status(500).json({ error: 'Analytics error' });
+  }
+});
+
+app.get('/api/analytics/efficiency', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const predictions = await pool.query(
+      'SELECT * FROM predictions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 30',
+      [decoded.userId]
+    );
+    
+    const efficiency = analyticsService.calculateEfficiencyScore(predictions.rows);
+    const anomalies = analyticsService.detectAnomalies(predictions.rows);
+    
+    res.json({ efficiency, anomalies: anomalies.length });
+  } catch (error) {
+    res.status(500).json({ error: 'Analytics error' });
+  }
+});
+
+// Export endpoints
+app.get('/api/export/csv', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const predictions = await pool.query(
+      'SELECT * FROM predictions WHERE user_id = $1 ORDER BY created_at DESC',
+      [decoded.userId]
+    );
+    
+    const csv = predictions.rows.map(row => 
+      `${row.date},${row.temperature},${row.predicted_consumption},${row.model_used},${row.confidence}`
+    ).join('\n');
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=energy_predictions.csv');
+    res.send('Date,Temperature,Consumption,Model,Confidence\n' + csv);
+  } catch (error) {
+    res.status(500).json({ error: 'Export error' });
+  }
+});
+
+// Real-time monitoring
+io.on('connection', (socket) => {
+  console.log('Client connected for real-time monitoring');
+  
+  socket.on('subscribe_monitoring', (userId) => {
+    socket.join(`user_${userId}`);
+  });
+  
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+// Enhanced store prediction with real-time updates
+const originalStorePrediction = app._router.stack.find(layer => 
+  layer.route && layer.route.path === '/api/store-prediction'
+);
+
+server.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  console.log('Real-time monitoring enabled');
 });

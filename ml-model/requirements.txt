@@ -8,18 +8,34 @@ scipy>=1.7.0
 
 # Machine learning
 scikit-learn>=1.0.0
+tensorflow>=2.10.0
+xgboost>=1.6.0
+lightgbm>=3.3.0
+
+# API and web framework
+flask>=2.2.0
+flask-cors>=4.0.0
+requests>=2.28.0
 
 # Visualization
 matplotlib>=3.4.0
 seaborn>=0.11.0
 plotly>=5.0.0
 
-# Optional: For enhanced analysis
+# Time series analysis
+statsmodels>=0.13.0
+prophet>=1.1.0
+
+# Enhanced analysis
 jupyter>=1.0.0
 ipywidgets>=7.6.0
-
-# Optional: For advanced time series analysis
-statsmodels>=0.13.0
-
-# Optional: For faster numerical operations
 numba>=0.56.0
+
+# Data processing
+openpyxl>=3.0.0
+psycopg2-binary>=2.9.0
+sqlalchemy>=1.4.0
+
+# Monitoring and logging
+psutil>=5.9.0
+loguru>=0.6.0

@@ -221,7 +221,7 @@ const Team = () => {
               <p className="text-gray-300">Team Members</p>
             </div>
             <div>
-              <h3 className="text-3xl font-bold text-blue-400 mb-2">5+</h3>
+              <h3 className="text-3xl font-bold text-blue-400 mb-2">3+</h3>
               <p className="text-gray-300">ML Models</p>
             </div>
             <div>

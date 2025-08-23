@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DollarSign, Leaf, TrendingDown, TrendingUp, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DollarSign, Leaf, TrendingDown, TrendingUp, Zap, Activity, Settings } from "lucide-react";
 import { useState } from "react";
 import {
   Bar,
@@ -16,6 +17,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import RealTimeMonitoring from "@/components/RealTimeMonitoring";
+import AdvancedAnalytics from "@/components/AdvancedAnalytics";
+import CostOptimization from "@/components/CostOptimization";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -202,19 +206,37 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Charts */}
+        {/* Enhanced Dashboard Tabs */}
         <Tabs
-          defaultValue="weekly"
+          defaultValue="overview"
           className="space-y-6"
           data-aos="fade-up"
           data-aos-duration="1000"
         >
-          <TabsList className="grid w-full grid-cols-3 bg-white/10">
+          <TabsList className="grid w-full grid-cols-6 bg-white/10">
             <TabsTrigger
-              value="weekly"
+              value="overview"
               className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400"
             >
-              Weekly View
+              Overview
+            </TabsTrigger>
+            <TabsTrigger
+              value="realtime"
+              className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400"
+            >
+              Real-time
+            </TabsTrigger>
+            <TabsTrigger
+              value="analytics"
+              className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400"
+            >
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger
+              value="optimization"
+              className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400"
+            >
+              Cost Optimization
             </TabsTrigger>
             <TabsTrigger
               value="monthly"
@@ -229,6 +251,108 @@ const Dashboard = () => {
               Usage Breakdown
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    Weekly Consumption
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={weeklyData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <XAxis dataKey="day" stroke="#9CA3AF" />
+                      <YAxis stroke="#9CA3AF" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Bar
+                        dataKey="consumption"
+                        fill="url(#energyGradient)"
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <defs>
+                        <linearGradient
+                          id="energyGradient"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop offset="0%" stopColor="#10B981" />
+                          <stop offset="100%" stopColor="#3B82F6" />
+                        </linearGradient>
+                      </defs>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 border-white/10">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    Daily Costs & Savings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={weeklyData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                      <XAxis dataKey="day" stroke="#9CA3AF" />
+                      <YAxis stroke="#9CA3AF" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1F2937",
+                          border: "1px solid #374151",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="cost"
+                        stroke="#EF4444"
+                        strokeWidth={3}
+                        dot={{ fill: "#EF4444", r: 6 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="savings"
+                        stroke="#10B981"
+                        strokeWidth={3}
+                        dot={{ fill: "#10B981", r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="realtime">
+            <div className="bg-white/5 border-white/10 rounded-lg p-6">
+              <RealTimeMonitoring />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <div className="bg-white/5 border-white/10 rounded-lg p-6">
+              <AdvancedAnalytics />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="optimization">
+            <div className="bg-white/5 border-white/10 rounded-lg p-6">
+              <CostOptimization />
+            </div>
+          </TabsContent>
 
           <TabsContent value="weekly" className="space-y-6">
             <div className="grid lg:grid-cols-2 gap-6">
@@ -428,6 +552,37 @@ const Dashboard = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Quick Actions */}
+        <Card
+          className="bg-white/5 border-white/10 mt-8"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
+          <CardHeader>
+            <CardTitle className="text-white">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-white/20 text-white hover:bg-white/10">
+                <Activity className="h-6 w-6" />
+                <span className="text-sm">Live Monitor</span>
+              </Button>
+              <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-white/20 text-white hover:bg-white/10">
+                <TrendingUp className="h-6 w-6" />
+                <span className="text-sm">Insights</span>
+              </Button>
+              <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-white/20 text-white hover:bg-white/10">
+                <DollarSign className="h-6 w-6" />
+                <span className="text-sm">Cost Analysis</span>
+              </Button>
+              <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-white/20 text-white hover:bg-white/10">
+                <Settings className="h-6 w-6" />
+                <span className="text-sm">Settings</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
