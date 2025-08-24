@@ -5,8 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "ios": "expo start --ios"
   },
   "dependencies": {
     "expo": "~49.0.0",
@@ -15,8 +14,6 @@
     "@expo/vector-icons": "^13.0.0",
     "react-native-chart-kit": "^6.12.0",
     "react-native-svg": "13.9.0",
-    "expo-notifications": "~0.20.1",
-    "expo-location": "~16.1.0",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/bottom-tabs": "^6.5.8",
     "react-native-screens": "~3.22.0",
