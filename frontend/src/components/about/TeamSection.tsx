@@ -9,22 +9,22 @@ const TeamSection = () => {
       image: "/TeamImage/kaushal.jpg"
     },
     {
-      name: "Team Member 2",
+      name: "Bansi",
       role: "Data Scientist",
       expertise: "Energy Analytics & Predictive Modeling",
-      image: "/TeamImage/member2.jpg" // Add your image
+      image: "/TeamImage/bansi.jpg"
     },
     {
-      name: "Team Member 3", 
+      name: "Drashti", 
       role: "ML Engineer",
       expertise: "Model Optimization & Deployment",
-      image: "/TeamImage/member3.jpg" // Add your image
+      image: "/TeamImage/drashti.jpg"
     },
     {
-      name: "Team Member 4",
+      name: "Hasti",
       role: "Business Analyst",
       expertise: "Energy Domain & Strategy",
-      image: "/TeamImage/member4.jpg" // Add your image
+      image: "/TeamImage/hasti.jpg"
     }
   ];
 

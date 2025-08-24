@@ -2,10 +2,20 @@
 frontend/.next
 frontend/node_modules
 frontend/.env*
+frontend/dist
+frontend/build
+frontend/.vite
+frontend/yarn.lock
+frontend/bun.lockb
 
 # Backend
 backend/node_modules
 backend/.env*
+backend/dist
+backend/build
+
+# Mobile App
+mobile-app/node_modules
 
 # ML
 ml-model/venv
@@ -15,3 +25,10 @@ ml-model/__pycache__
 .DS_Store
 *.log
 node_modules
+package-lock.json
+yarn.lock
+bun.lockb
+*.tmp
+coverage
+.nyc_output
+Thumbs.db
