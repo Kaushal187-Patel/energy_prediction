@@ -1,14 +1,13 @@
-import express from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import pkg from 'pg';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import weatherService from './services/weatherService.js';
-import alertService from './services/alertService.js';
-import analyticsService from './services/analyticsService.js';
+import express from 'express';
 import { createServer } from 'http';
+import jwt from 'jsonwebtoken';
+import pkg from 'pg';
 import { Server } from 'socket.io';
+import analyticsService from './services/analyticsService.js';
+import weatherService from './services/weatherService.js';
 
 const { Pool } = pkg;
 dotenv.config();

@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 
+import LoginModal from "@/components/LoginModal";
 import {
   Brain,
-  Calendar,
   Database,
   Monitor,
   Thermometer,
@@ -23,7 +23,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import LoginModal from "@/components/LoginModal";
 
 const Predict = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -40,7 +39,13 @@ const Predict = () => {
   const [costEstimate, setCostEstimate] = useState<number>(0);
   const [timeOfDay, setTimeOfDay] = useState<number>(12);
   const [dayType, setDayType] = useState<string>("weekday");
-  const [devices, setDevices] = useState<{device: string, hours: number}[]>([{device: "AC", hours: 480}]);
+  const [devices, setDevices] = useState<{ device: string; hours: number }[]>([
+    { device: "AC", hours: 300 },
+    { device: "Refrigerator", hours: 1440 },
+    { device: "TV", hours: 120 },
+    { device: "Lights", hours: 360 },
+    { device: "WashingMachine", hours: 90 },
+  ]);
 
   // New input states matching the screenshot
   const [homeId, setHomeId] = useState<number>(13);
@@ -67,9 +72,9 @@ const Predict = () => {
   const [apiStatus, setApiStatus] = useState<string>("Checking API...");
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
     if (token && userData) {
       setIsAuthenticated(true);
       setUser(JSON.parse(userData));
@@ -103,30 +108,33 @@ const Predict = () => {
 
   const setCurrentDateTime = () => {
     const now = new Date();
-    setDate(now.toISOString().split('T')[0]);
+    setDate(now.toISOString().split("T")[0]);
     setStartTime(now.toTimeString().slice(0, 5));
     setSeason(getCurrentSeason());
   };
 
   const getCurrentSeason = () => {
     const month = new Date().getMonth() + 1;
-    if (month >= 3 && month <= 5) return 'Spring';
-    if (month >= 6 && month <= 8) return 'Summer';
-    if (month >= 9 && month <= 11) return 'Autumn';
-    return 'Winter';
+    if (month >= 3 && month <= 5) return "Spring";
+    if (month >= 6 && month <= 8) return "Summer";
+    if (month >= 9 && month <= 11) return "Autumn";
+    return "Winter";
   };
 
   const fetchRealTimeData = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/analytics/efficiency', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await fetch(
+        "http://localhost:3001/api/analytics/efficiency",
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         setRealTimeData(data);
       }
     } catch (error) {
-      console.log('Real-time data fetch failed');
+      console.log("Real-time data fetch failed");
     }
   };
 
@@ -136,14 +144,16 @@ const Predict = () => {
         const { latitude, longitude } = position.coords;
         setLocationData({ lat: latitude, lon: longitude });
         try {
-          const response = await fetch(`http://localhost:3001/api/weather/current?lat=${latitude}&lon=${longitude}`);
+          const response = await fetch(
+            `http://localhost:3001/api/weather/current?lat=${latitude}&lon=${longitude}`
+          );
           if (response.ok) {
             const weather = await response.json();
             setTemperature(Math.round(weather.temperature));
             setWeatherData(weather);
           }
         } catch (error) {
-          console.log('Location weather fetch failed');
+          console.log("Location weather fetch failed");
         }
       });
     }
@@ -155,7 +165,7 @@ const Predict = () => {
       `Peak hours 6-9 PM. Shift heavy appliances to save costs`,
       `${season}: Use natural ventilation when possible`,
       `Household ${householdSize}: LED bulbs save ₹500/month`,
-      `Current weather ideal for air drying clothes`
+      `Current weather ideal for air drying clothes`,
     ];
     setEnergyTips(tips.slice(0, 3));
   };
@@ -166,37 +176,92 @@ const Predict = () => {
     setPeakHours({
       current: currentHour,
       isPeak,
-      rate: isPeak ? '₹8.5/kWh' : '₹5.2/kWh'
+      rate: isPeak ? "₹8.5/kWh" : "₹5.2/kWh",
     });
   };
 
   const calculateCostEstimate = () => {
     const baseRate = peakHours?.isPeak ? 8.5 : 5.2;
     const deviceCost = devices.reduce((total, device) => {
-      const rates = { AC: 2.5, TV: 0.15, Refrigerator: 0.4, WashingMachine: 1.5, Heater: 3.0, Lights: 0.1 };
-      return total + ((rates[device.device as keyof typeof rates] || 1) * (device.hours / 60) * baseRate);
+      const rates = {
+        AC: 2.5,
+        TV: 0.15,
+        Refrigerator: 0.4,
+        WashingMachine: 1.5,
+        Heater: 3.0,
+        Lights: 0.1,
+      };
+      return (
+        total +
+        (rates[device.device as keyof typeof rates] || 1) *
+          (device.hours / 60) *
+          baseRate
+      );
     }, 0);
     setCostEstimate(Math.round(deviceCost * 100) / 100);
   };
 
   const fetchCurrentWeather = async () => {
     setWeatherLoading(true);
+    const fallback = (label: string) => {
+      const temp = 25;
+      setTemperature(temp);
+      setWeatherData({
+        temperature: temp,
+        description: label,
+        humidity: 50,
+        windSpeed: 2.0,
+      });
+    };
+
     try {
-      const response = await fetch('http://localhost:3001/api/weather/current');
-      if (response.ok) {
-        const weather = await response.json();
-        console.log('Weather data:', weather);
-        const newTemp = Math.round(weather.temperature);
-        console.log('Setting temperature to:', newTemp);
-        setTemperature(newTemp);
-        setWeatherData(weather);
-      } else {
-        setTemperature(25);
+      if (navigator.geolocation) {
+        await new Promise<void>((resolve) => {
+          navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+              try {
+                const { latitude, longitude } = pos.coords;
+                const res = await fetch(
+                  `http://localhost:3001/api/weather/current?lat=${latitude}&lon=${longitude}`
+                );
+                if (res.ok) {
+                  const weather = await res.json();
+                  const newTemp = Math.round(weather.temperature);
+                  setTemperature(newTemp);
+                  setWeatherData(weather);
+                } else {
+                  fallback("Weather unavailable (location)");
+                }
+              } catch {
+                fallback("Weather error (location)");
+              }
+              resolve();
+            },
+            () => {
+              resolve();
+            }
+          );
+        });
+      }
+
+      if (temperature === null) {
+        const response = await fetch(
+          "http://localhost:3001/api/weather/current"
+        );
+        if (response.ok) {
+          const weather = await response.json();
+          const newTemp = Math.round(weather.temperature);
+          setTemperature(newTemp);
+          setWeatherData(weather);
+        } else {
+          fallback("Weather unavailable");
+        }
       }
     } catch (error) {
-      console.log('Weather fetch error:', error);
-      setTemperature(25);
+      console.log("Weather fetch error:", error);
+      fallback("Weather error");
     }
+
     setWeatherLoading(false);
   };
 
@@ -295,8 +360,15 @@ const Predict = () => {
         const dayTypeImpact =
           dayType === "weekend" || dayOfWeek === 0 || dayOfWeek === 6 ? 12 : 8;
         const deviceImpact = devices.reduce((total, d) => {
-          const deviceMultiplier = d.device === 'AC' ? 0.3 : d.device === 'TV' ? 0.15 : d.device === 'Refrigerator' ? 0.2 : 0.1;
-          return total + (d.hours * deviceMultiplier / 10);
+          const deviceMultiplier =
+            d.device === "AC"
+              ? 0.3
+              : d.device === "TV"
+              ? 0.15
+              : d.device === "Refrigerator"
+              ? 0.2
+              : 0.1;
+          return total + (d.hours * deviceMultiplier) / 10;
         }, 0);
         const startHour = parseInt(startTime.split(":")[0], 10);
         const endHour = parseInt(endTime.split(":")[0], 10);
@@ -335,16 +407,16 @@ const Predict = () => {
             prediction: rfPrediction,
           },
         ]);
-        
+
         // Store prediction in database
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (token) {
           try {
-            await fetch('http://localhost:3001/api/store-prediction', {
-              method: 'POST',
+            await fetch("http://localhost:3001/api/store-prediction", {
+              method: "POST",
               headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
                 temperature,
@@ -353,12 +425,12 @@ const Predict = () => {
                 date,
                 devices,
                 predictedConsumption: rfPrediction,
-                modelUsed: 'Random Forest',
-                confidence: Math.round(data.model_scores.random_forest * 100)
-              })
+                modelUsed: "Random Forest",
+                confidence: Math.round(data.model_scores.random_forest * 100),
+              }),
             });
           } catch (error) {
-            console.log('Failed to store prediction:', error);
+            console.log("Failed to store prediction:", error);
           }
         }
       } else {
@@ -375,7 +447,12 @@ const Predict = () => {
   };
 
   if (showLoginModal) {
-    return <LoginModal onClose={() => setShowLoginModal(false)} onLogin={handleLogin} />;
+    return (
+      <LoginModal
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleLogin}
+      />
+    );
   }
 
   if (!isAuthenticated) {
@@ -386,7 +463,11 @@ const Predict = () => {
     <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-8 sm:mb-12" data-aos="fade-up" data-aos-duration="1000">
+        <div
+          className="text-center mb-8 sm:mb-12"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
           <div className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-green-500/20 text-green-400 text-xs sm:text-sm font-medium mb-4 sm:mb-6">
             <Database className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
             {apiStatus}
@@ -401,37 +482,19 @@ const Predict = () => {
         </div>
 
         {/* Input Form */}
-        <section className="mb-6 sm:mb-8" data-aos="fade-up" data-aos-duration="1000">
+        <section
+          className="mb-6 sm:mb-8"
+          data-aos="fade-up"
+          data-aos-duration="1000"
+        >
           <Card className="bg-white/5 border-white/10">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl">Input Parameters</CardTitle>
+              <CardTitle className="text-lg sm:text-xl">
+                Input Parameters
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4 sm:p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                {/* Appliance Type */}
-                {/* <div>
-                  <label className="text-gray-200 text-xs sm:text-sm font-medium mb-2 block">
-                    Appliance Type
-                  </label>
-                  <Select
-                    onValueChange={setApplianceType}
-                    defaultValue={applianceType}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={applianceType} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Refrigerator">Refrigerator</SelectItem>
-                      <SelectItem value="AC">AC</SelectItem>
-                      <SelectItem value="WashingMachine">
-                        Washing Machine
-                      </SelectItem>
-                      <SelectItem value="Heater">Heater</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div> */}
-
-                {/* Date */}
                 <div>
                   <label className="text-gray-200 text-xs sm:text-sm font-medium mb-2 block">
                     Date
@@ -453,7 +516,10 @@ const Predict = () => {
                         htmlFor="temperature"
                         className="text-gray-200 text-xs sm:text-sm font-medium"
                       >
-                        Temperature (°C): {temperature !== null ? temperature : 'Click Current Weather'}
+                        Temperature (°C):{" "}
+                        {temperature !== null
+                          ? temperature
+                          : "Click Current Weather"}
                       </label>
                     </div>
                     <Button
@@ -464,17 +530,19 @@ const Predict = () => {
                       disabled={weatherLoading}
                       className="text-xs"
                     >
-                      {weatherLoading ? 'Loading...' : 'Current Weather'}
+                      {weatherLoading ? "Loading..." : "Current Weather"}
                     </Button>
                   </div>
                   {weatherData && (
                     <div className="text-xs text-gray-400 mb-2">
-                      🌡️ {weatherData.temperature}°C, {weatherData.description}, 💧 {weatherData.humidity}%, 🌬️ {weatherData.windSpeed}m/s
+                      🌡️ {weatherData.temperature}°C, {weatherData.description},
+                      💧 {weatherData.humidity}%, 🌬️ {weatherData.windSpeed}m/s
                     </div>
                   )}
                   {!weatherData && (
                     <div className="text-xs text-yellow-400 mb-2">
-                      ⚠️ Click "Current Weather" to get real temperature from your location
+                      ⚠️ Click "Current Weather" to get real temperature from
+                      your location
                     </div>
                   )}
                   <Slider
@@ -488,60 +556,7 @@ const Predict = () => {
                     disabled={temperature === null}
                   />
                 </div>
-
-                {/* Season */}
-                <div>
-                  <label className="text-gray-200 text-xs sm:text-sm font-medium mb-2 block">
-                    Season
-                  </label>
-                  <Select onValueChange={setSeason} defaultValue={season}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={season} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Summer">Summer</SelectItem>
-                      <SelectItem value="Winter">Winter</SelectItem>
-                      <SelectItem value="Rainy">Rainy</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Household Size */}
-                {/* <div>
-                  <label className="text-gray-200 text-xs sm:text-sm font-medium mb-2 block">
-                    Household Size: {householdSize}
-                  </label>
-                  <Slider
-                    defaultValue={[householdSize]}
-                    max={15}
-                    min={1}
-                    step={1}
-                    onValueChange={(value) => setHouseholdSize(value[0])}
-                    className="mb-4"
-                  />
-                </div> */}
-
-                {/* Day Type */}
-                <div>
-                  <div className="flex items-center mb-2">
-                    <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-                    <label className="text-gray-200 text-xs sm:text-sm font-medium">
-                      Day Type
-                    </label>
-                  </div>
-                  <Select onValueChange={setDayType} defaultValue={dayType}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select day type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="weekday">Weekday</SelectItem>
-                      <SelectItem value="weekend">Weekend</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
               </div>
-
               {/* Devices Section */}
               <div className="mt-4 sm:mt-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
@@ -555,13 +570,15 @@ const Predict = () => {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => setDevices([...devices, {device: "AC", hours: 480}])}
+                    onClick={() =>
+                      setDevices([...devices, { device: "AC", hours: 480 }])
+                    }
                     className="text-xs sm:text-sm"
                   >
                     Add Device
                   </Button>
                 </div>
-                
+
                 {devices.map((device, index) => (
                   <div key={index} className="mb-3 sm:mb-4">
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center mb-2">
@@ -580,8 +597,12 @@ const Predict = () => {
                           <SelectContent>
                             <SelectItem value="AC">Air Conditioner</SelectItem>
                             <SelectItem value="TV">Television</SelectItem>
-                            <SelectItem value="Refrigerator">Refrigerator</SelectItem>
-                            <SelectItem value="WashingMachine">Washing Machine</SelectItem>
+                            <SelectItem value="Refrigerator">
+                              Refrigerator
+                            </SelectItem>
+                            <SelectItem value="WashingMachine">
+                              Washing Machine
+                            </SelectItem>
                             <SelectItem value="Heater">Heater</SelectItem>
                             <SelectItem value="Lights">Lights</SelectItem>
                           </SelectContent>
@@ -610,7 +631,9 @@ const Predict = () => {
                           type="button"
                           variant="destructive"
                           size="sm"
-                          onClick={() => setDevices(devices.filter((_, i) => i !== index))}
+                          onClick={() =>
+                            setDevices(devices.filter((_, i) => i !== index))
+                          }
                           className="text-xs sm:text-sm"
                         >
                           Remove
@@ -621,30 +644,25 @@ const Predict = () => {
                 ))}
               </div>
 
-              {/* Auto Mode Toggle */}
-              <div className="flex items-center justify-between mt-4 p-3 bg-white/5 rounded-lg">
-                <div>
-                  <label className="text-gray-200 text-sm font-medium">Auto Mode</label>
-                  <p className="text-xs text-gray-400">Automatically update data every 30 seconds</p>
-                </div>
-                <Button
-                  type="button"
-                  variant={autoMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setAutoMode(!autoMode)}
-                  className="text-xs"
-                >
-                  {autoMode ? 'ON' : 'OFF'}
-                </Button>
-              </div>
-
               {/* Real-time Data Display */}
               {realTimeData && (
                 <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                  <h4 className="text-sm font-medium text-green-400 mb-2">Live System Data</h4>
+                  <h4 className="text-sm font-medium text-green-400 mb-2">
+                    Live System Data
+                  </h4>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="text-gray-300">Efficiency: <span className="text-green-400">{realTimeData.efficiency?.toFixed(1)}%</span></div>
-                    <div className="text-gray-300">Anomalies: <span className="text-yellow-400">{realTimeData.anomalies || 0}</span></div>
+                    <div className="text-gray-300">
+                      Efficiency:{" "}
+                      <span className="text-green-400">
+                        {realTimeData.efficiency?.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="text-gray-300">
+                      Anomalies:{" "}
+                      <span className="text-yellow-400">
+                        {realTimeData.anomalies || 0}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -653,7 +671,9 @@ const Predict = () => {
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-blue-400">Location</h4>
+                    <h4 className="text-sm font-medium text-blue-400">
+                      Location
+                    </h4>
                     <Button
                       type="button"
                       variant="outline"
@@ -666,18 +686,25 @@ const Predict = () => {
                   </div>
                   {locationData ? (
                     <div className="text-xs text-gray-300">
-                      Lat: {locationData.lat.toFixed(2)}, Lon: {locationData.lon.toFixed(2)}
+                      Lat: {locationData.lat.toFixed(2)}, Lon:{" "}
+                      {locationData.lon.toFixed(2)}
                     </div>
                   ) : (
-                    <div className="text-xs text-gray-400">Click to get location</div>
+                    <div className="text-xs text-gray-400">
+                      Click to get location
+                    </div>
                   )}
                 </div>
 
                 {peakHours && (
                   <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
-                    <h4 className="text-sm font-medium text-orange-400 mb-2">Peak Hours</h4>
+                    <h4 className="text-sm font-medium text-orange-400 mb-2">
+                      Peak Hours
+                    </h4>
                     <div className="text-xs text-gray-300">
-                      <div>Status: {peakHours.isPeak ? 'Peak Time' : 'Off-Peak'}</div>
+                      <div>
+                        Status: {peakHours.isPeak ? "Peak Time" : "Off-Peak"}
+                      </div>
                       <div>Rate: {peakHours.rate}</div>
                     </div>
                   </div>
@@ -688,18 +715,28 @@ const Predict = () => {
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {costEstimate > 0 && (
                   <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
-                    <h4 className="text-sm font-medium text-purple-400 mb-2">Cost Estimate</h4>
-                    <div className="text-lg font-bold text-white">₹{costEstimate}</div>
-                    <div className="text-xs text-gray-400">Daily cost estimate</div>
+                    <h4 className="text-sm font-medium text-purple-400 mb-2">
+                      Cost Estimate
+                    </h4>
+                    <div className="text-lg font-bold text-white">
+                      ₹{costEstimate}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      Daily cost estimate
+                    </div>
                   </div>
                 )}
 
                 {energyTips.length > 0 && (
                   <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                    <h4 className="text-sm font-medium text-yellow-400 mb-2">Smart Tips</h4>
+                    <h4 className="text-sm font-medium text-yellow-400 mb-2">
+                      Smart Tips
+                    </h4>
                     <div className="space-y-1">
                       {energyTips.map((tip, index) => (
-                        <div key={index} className="text-xs text-gray-300">• {tip}</div>
+                        <div key={index} className="text-xs text-gray-300">
+                          • {tip}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -708,7 +745,9 @@ const Predict = () => {
 
               {/* Quick Fill Buttons */}
               <div className="mt-4">
-                <label className="text-gray-200 text-sm font-medium mb-2 block">Quick Fill</label>
+                <label className="text-gray-200 text-sm font-medium mb-2 block">
+                  Quick Fill
+                </label>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     type="button"
@@ -717,8 +756,14 @@ const Predict = () => {
                     onClick={() => {
                       setTemperature(25);
                       setHouseholdSize(4);
-                      setSeason('Summer');
-                      setDevices([{device: 'AC', hours: 480}]);
+                      setSeason("Summer");
+                      setDevices([
+                        { device: "AC", hours: 300 },
+                        { device: "Refrigerator", hours: 1440 },
+                        { device: "Lights", hours: 360 },
+                        { device: "TV", hours: 120 },
+                        { device: "WashingMachine", hours: 90 },
+                      ]);
                     }}
                     className="text-xs"
                   >
@@ -731,8 +776,14 @@ const Predict = () => {
                     onClick={() => {
                       setTemperature(15);
                       setHouseholdSize(3);
-                      setSeason('Winter');
-                      setDevices([{device: 'Heater', hours: 600}]);
+                      setSeason("Winter");
+                      setDevices([
+                        { device: "Heater", hours: 480 },
+                        { device: "Refrigerator", hours: 1440 },
+                        { device: "Lights", hours: 420 },
+                        { device: "TV", hours: 120 },
+                        { device: "WashingMachine", hours: 120 },
+                      ]);
                     }}
                     className="text-xs"
                   >
@@ -745,8 +796,13 @@ const Predict = () => {
                     onClick={() => {
                       setTemperature(22);
                       setHouseholdSize(2);
-                      setSeason('Spring');
-                      setDevices([{device: 'TV', hours: 300}, {device: 'Refrigerator', hours: 1440}]);
+                      setSeason("Spring");
+                      setDevices([
+                        { device: "Lights", hours: 480 },
+                        { device: "AC", hours: 240 },
+                        { device: "TV", hours: 60 },
+                        { device: "Refrigerator", hours: 1440 },
+                      ]);
                     }}
                     className="text-xs"
                   >
@@ -759,9 +815,41 @@ const Predict = () => {
                     onClick={() => {
                       const now = new Date();
                       const hour = now.getHours();
-                      const temp = hour < 6 || hour > 20 ? 18 : hour > 12 ? 28 : 24;
+                      const temp =
+                        hour < 6 || hour > 20 ? 18 : hour > 12 ? 28 : 24;
                       setTemperature(temp);
                       setCurrentDateTime();
+                      if (temp >= 26) {
+                        setDevices([
+                          { device: "AC", hours: 360 },
+                          { device: "Refrigerator", hours: 1440 },
+                          {
+                            device: "Lights",
+                            hours: hour >= 18 || hour <= 6 ? 300 : 180,
+                          },
+                          { device: "TV", hours: 90 },
+                        ]);
+                      } else if (temp <= 18) {
+                        setDevices([
+                          { device: "Heater", hours: 360 },
+                          { device: "Refrigerator", hours: 1440 },
+                          {
+                            device: "Lights",
+                            hours: hour >= 18 || hour <= 6 ? 360 : 180,
+                          },
+                          { device: "TV", hours: 90 },
+                        ]);
+                      } else {
+                        setDevices([
+                          { device: "Refrigerator", hours: 1440 },
+                          {
+                            device: "Lights",
+                            hours: hour >= 18 || hour <= 6 ? 300 : 120,
+                          },
+                          { device: "TV", hours: 60 },
+                          { device: "WashingMachine", hours: 90 },
+                        ]);
+                      }
                       fetchCurrentWeather();
                     }}
                     className="text-xs"
@@ -775,8 +863,14 @@ const Predict = () => {
                     onClick={() => {
                       setTemperature(35);
                       setHouseholdSize(6);
-                      setSeason('Summer');
-                      setDevices([{device: 'AC', hours: 720}, {device: 'Refrigerator', hours: 1440}]);
+                      setSeason("Summer");
+                      setDevices([
+                        { device: "AC", hours: 720 },
+                        { device: "Refrigerator", hours: 1440 },
+                        { device: "Lights", hours: 600 },
+                        { device: "TV", hours: 300 },
+                        { device: "WashingMachine", hours: 120 },
+                      ]);
                     }}
                     className="text-xs"
                   >
@@ -882,8 +976,12 @@ const Predict = () => {
                         key={index}
                         className="flex items-center justify-between py-2 border-b border-white/10"
                       >
-                        <span className="text-gray-300 text-xs sm:text-sm">{factor.name}</span>
-                        <span className="text-green-400 text-xs sm:text-sm">{factor.value}%</span>
+                        <span className="text-gray-300 text-xs sm:text-sm">
+                          {factor.name}
+                        </span>
+                        <span className="text-green-400 text-xs sm:text-sm">
+                          {factor.value}%
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -895,7 +993,11 @@ const Predict = () => {
 
         {/* Model Comparison */}
         {comparison.length > 0 && (
-          <section className="mt-6 sm:mt-8" data-aos="fade-up" data-aos-duration="1000">
+          <section
+            className="mt-6 sm:mt-8"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+          >
             <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
               Model Comparison
             </h3>
