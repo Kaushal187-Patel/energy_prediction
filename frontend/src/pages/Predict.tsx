@@ -92,7 +92,7 @@ const Predict = () => {
   }, [temperature, season, householdSize, devices]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (autoMode) {
       interval = setInterval(() => {
         fetchCurrentWeather();
