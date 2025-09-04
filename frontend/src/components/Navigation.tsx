@@ -1,70 +1,84 @@
-
-import { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import LoginModal from './LoginModal';
-import ProfileModal from './ProfileModal';
-import { 
-  Home, 
-  Calculator, 
-  TrendingUp, 
-  Info, 
-  BarChart3, 
-  Menu, 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  BarChart3,
+  Calculator,
+  Home,
+  Info,
+  LogIn,
+  LogOut,
+  Menu,
+  Settings,
+  TrendingUp,
+  User,
+  Users,
   X,
   Zap,
-  LogIn,
-  User,
-  LogOut,
-  Settings,
-  Edit,
-  Users
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import LoginModal from "./LoginModal";
+import ProfileModal from "./ProfileModal";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("user") || "null")
+  );
 
   useEffect(() => {
     const handleStorageChange = () => {
-      setUser(JSON.parse(localStorage.getItem('user') || 'null'));
+      setUser(JSON.parse(localStorage.getItem("user") || "null"));
     };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
+
+    window.addEventListener("storage", handleStorageChange);
+
     const interval = setInterval(() => {
-      const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+      const currentUser = JSON.parse(localStorage.getItem("user") || "null");
       if (JSON.stringify(currentUser) !== JSON.stringify(user)) {
         setUser(currentUser);
       }
     }, 100);
-    
+
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
     };
   }, [user]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     setShowLogoutConfirm(false);
   };
 
   const navItems = [
-    { to: '/', icon: Home, label: 'Home' },
-    { to: '/predict', icon: Calculator, label: 'Predict' },
-    { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
-    { to: '/insights', icon: TrendingUp, label: 'Insights' },
-    { to: '/team', icon: Users, label: 'Team' },
-    { to: '/about', icon: Info, label: 'About' },
+    { to: "/", icon: Home, label: "Home" },
+    { to: "/predict", icon: Calculator, label: "Predict" },
+    { to: "/dashboard", icon: BarChart3, label: "Dashboard" },
+    { to: "/insights", icon: TrendingUp, label: "Insights" },
+    { to: "/team", icon: Users, label: "Team" },
+    { to: "/about", icon: Info, label: "About" },
   ];
 
   return (
@@ -90,8 +104,8 @@ const Navigation = () => {
                 className={({ isActive }) =>
                   `flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-green-500/20 text-green-400 energy-glow'
-                      : 'text-gray-300 hover:text-white hover:bg-white/10'
+                      ? "bg-green-500/20 text-green-400 energy-glow"
+                      : "text-gray-300 hover:text-white hover:bg-white/10"
                   }`
                 }
               >
@@ -103,7 +117,9 @@ const Navigation = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 text-gray-300 hover:text-white hover:bg-white/10">
                   <User className="h-4 w-4" />
-                  <span className="text-sm font-medium">{user.name.split(' ')[0]}</span>
+                  <span className="text-sm font-medium">
+                    {user.name.split(" ")[0]}
+                  </span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64">
                   <div className="px-3 py-2 border-b">
@@ -112,7 +128,13 @@ const Navigation = () => {
                   </div>
                   <DropdownMenuItem onClick={() => setShowProfile(true)}>
                     <Settings className="h-4 w-4 mr-2" />
-                    Profile Settings
+                    Edit Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <NavLink to="/profile" className="flex items-center">
+                      <User className="h-4 w-4 mr-2" />
+                      Prediction History
+                    </NavLink>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setShowLogoutConfirm(true)}>
                     <LogOut className="h-4 w-4 mr-2" />
@@ -139,7 +161,11 @@ const Navigation = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-300 hover:text-white"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>
@@ -156,8 +182,8 @@ const Navigation = () => {
                   className={({ isActive }) =>
                     `flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                        ? "bg-green-500/20 text-green-400"
+                        : "text-gray-300 hover:text-white hover:bg-white/10"
                     }`
                   }
                 >
@@ -169,10 +195,15 @@ const Navigation = () => {
                 <>
                   <div className="flex items-center space-x-3 px-4 py-3 text-gray-300">
                     <User className="h-5 w-5" />
-                    <span className="font-medium">{user.name.split(' ')[0]}</span>
+                    <span className="font-medium">
+                      {user.name.split(" ")[0]}
+                    </span>
                   </div>
                   <button
-                    onClick={() => { setShowLogoutConfirm(true); setIsOpen(false); }}
+                    onClick={() => {
+                      setShowLogoutConfirm(true);
+                      setIsOpen(false);
+                    }}
                     className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-300 hover:text-white hover:bg-white/10 w-full text-left"
                   >
                     <LogOut className="h-5 w-5" />
@@ -181,7 +212,10 @@ const Navigation = () => {
                 </>
               ) : (
                 <button
-                  onClick={() => { setShowLogin(true); setIsOpen(false); }}
+                  onClick={() => {
+                    setShowLogin(true);
+                    setIsOpen(false);
+                  }}
                   className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-300 hover:text-white hover:bg-white/10 w-full text-left"
                 >
                   <LogIn className="h-5 w-5" />
@@ -192,13 +226,19 @@ const Navigation = () => {
           </div>
         )}
       </div>
-      
+
       <Dialog open={showLogin} onOpenChange={setShowLogin}>
         <DialogContent className="max-w-none w-full h-full p-0 bg-transparent backdrop-blur-sm">
-          <LoginModal onClose={() => setShowLogin(false)} onLogin={(userData) => { setUser(userData); setShowLogin(false); }} />
+          <LoginModal
+            onClose={() => setShowLogin(false)}
+            onLogin={(userData) => {
+              setUser(userData);
+              setShowLogin(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
-      
+
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -213,10 +253,17 @@ const Navigation = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      
+
       <Dialog open={showProfile} onOpenChange={setShowProfile}>
         <DialogContent className="max-w-none w-full h-full p-0 bg-black/50 backdrop-blur-sm">
-          <ProfileModal user={user} onClose={() => setShowProfile(false)} onUpdate={(updatedUser) => { setUser(updatedUser); localStorage.setItem('user', JSON.stringify(updatedUser)); }} />
+          <ProfileModal
+            user={user}
+            onClose={() => setShowProfile(false)}
+            onUpdate={(updatedUser) => {
+              setUser(updatedUser);
+              localStorage.setItem("user", JSON.stringify(updatedUser));
+            }}
+          />
         </DialogContent>
       </Dialog>
     </nav>

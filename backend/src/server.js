@@ -225,6 +225,96 @@ app.get('/api/predictions', async (req, res) => {
   }
 });
 
+// Get user profile endpoint
+app.get('/api/user/profile', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    const userResult = await pool.query(
+      'SELECT id, name, email, created_at FROM users WHERE id = $1',
+      [decoded.userId]
+    );
+    
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const user = userResult.rows[0];
+    
+    // Get prediction statistics
+    const statsResult = await pool.query(
+      'SELECT COUNT(*) as total_predictions, AVG(predicted_consumption) as avg_consumption, MAX(created_at) as last_prediction FROM predictions WHERE user_id = $1',
+      [decoded.userId]
+    );
+    
+    const stats = statsResult.rows[0];
+    
+    // Get most used model
+    const modelResult = await pool.query(
+      'SELECT model_used, COUNT(*) as count FROM predictions WHERE user_id = $1 GROUP BY model_used ORDER BY count DESC LIMIT 1',
+      [decoded.userId]
+    );
+    
+    const profile = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      joinDate: user.created_at,
+      totalPredictions: parseInt(stats.total_predictions) || 0,
+      averageConsumption: parseFloat(stats.avg_consumption) || 0,
+      favoriteModel: modelResult.rows[0]?.model_used || 'N/A',
+      lastPrediction: stats.last_prediction || null
+    };
+    
+    res.json(profile);
+  } catch (error) {
+    console.error('Profile error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get prediction history endpoint
+app.get('/api/predictions/history', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    const result = await pool.query(
+      'SELECT id, temperature, household_size, season, date, devices, predicted_consumption, model_used, confidence, created_at FROM predictions WHERE user_id = $1 ORDER BY created_at DESC',
+      [decoded.userId]
+    );
+    
+    const predictions = result.rows.map(row => ({
+      id: row.id,
+      temperature: row.temperature,
+      householdSize: row.household_size,
+      season: row.season,
+      date: row.date,
+      devices: row.devices,
+      predictedConsumption: row.predicted_consumption,
+      modelUsed: row.model_used,
+      confidence: row.confidence,
+      createdAt: row.created_at
+    }));
+    
+    res.json({ predictions });
+  } catch (error) {
+    console.error('Prediction history error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Weather endpoints
 app.get('/api/weather/current', async (req, res) => {
   try {
