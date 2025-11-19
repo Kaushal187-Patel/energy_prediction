@@ -116,11 +116,20 @@ const Profile = () => {
 
   const fetchPredictionHistory = async () => {
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
       console.log(
         "Fetching prediction history with token:",
         token ? "Token exists" : "No token"
       );
+
+      if (!token) {
+        setError("No authentication token found. Please login again.");
+        setPredictions([]);
+        calculateStats([]);
+        setIsLoading(false);
+        return;
+      }
 
       const response = await fetch(
         "http://localhost:3001/api/predictions/history",
@@ -134,17 +143,30 @@ const Profile = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Prediction history data received:", data);
-        setPredictions(data.predictions || []);
-        calculateStats(data.predictions || []);
+        const predictionsList = Array.isArray(data.predictions) ? data.predictions : [];
+        setPredictions(predictionsList);
+        calculateStats(predictionsList);
         setError("");
       } else {
         const errorText = await response.text();
+        let errorMessage = `Predictions fetch failed: ${response.status}`;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage += ` - ${errorData.error || errorData.details || errorText}`;
+        } catch {
+          errorMessage += ` - ${errorText}`;
+        }
         console.log("Failed to fetch predictions:", response.status, errorText);
-        setError(`Predictions fetch failed: ${response.status} - ${errorText}`);
+        setError(errorMessage);
+        setPredictions([]);
+        calculateStats([]);
       }
     } catch (error) {
-      console.log("Failed to fetch prediction history:", error);
-      setError(`Predictions fetch error: ${error}`);
+      console.error("Failed to fetch prediction history:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(`Predictions fetch error: ${errorMessage}`);
+      setPredictions([]);
+      calculateStats([]);
     } finally {
       setIsLoading(false);
     }
@@ -158,23 +180,53 @@ const Profile = () => {
   };
 
   const calculateStats = (predictionList: Prediction[]) => {
-    if (predictionList.length === 0) return;
+    if (predictionList.length === 0) {
+      setStats({
+        totalPredictions: 0,
+        averageConsumption: 0,
+        highestConsumption: 0,
+        lowestConsumption: 0,
+        mostUsedModel: "",
+        totalDevices: 0,
+      });
+      return;
+    }
 
-    const consumptions = predictionList.map((p) => p.predictedConsumption);
-    const models = predictionList.map((p) => p.modelUsed);
-    const deviceCounts = predictionList.reduce(
-      (total, p) => total + p.devices.length,
-      0
-    );
+    const consumptions = predictionList
+      .map((p) => p.predictedConsumption)
+      .filter((c) => c != null && !isNaN(c));
+    
+    if (consumptions.length === 0) {
+      setStats({
+        totalPredictions: predictionList.length,
+        averageConsumption: 0,
+        highestConsumption: 0,
+        lowestConsumption: 0,
+        mostUsedModel: "",
+        totalDevices: 0,
+      });
+      return;
+    }
+
+    const models = predictionList
+      .map((p) => p.modelUsed)
+      .filter((m) => m != null && m !== "");
+    
+    const deviceCounts = predictionList.reduce((total, p) => {
+      const devices = Array.isArray(p.devices) ? p.devices : [];
+      return total + devices.length;
+    }, 0);
 
     const modelCounts = models.reduce((acc, model) => {
       acc[model] = (acc[model] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    const mostUsedModel = Object.entries(modelCounts).reduce((a, b) =>
-      modelCounts[a[0]] > modelCounts[b[0]] ? a : b
-    )[0];
+    const mostUsedModel = Object.keys(modelCounts).length > 0
+      ? Object.entries(modelCounts).reduce((a, b) =>
+          modelCounts[a[0]] > modelCounts[b[0]] ? a : b
+        )[0]
+      : "";
 
     setStats({
       totalPredictions: predictionList.length,
@@ -198,18 +250,33 @@ const Profile = () => {
     fetchPredictionHistory();
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Invalid Date";
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Invalid Date";
+    }
   };
 
-  const getDeviceSummary = (devices: { device: string; hours: number }[]) => {
-    return devices.map((d) => `${d.device} (${d.hours}m)`).join(", ");
+  const getDeviceSummary = (devices: { device: string; hours: number }[] | null | undefined) => {
+    if (!devices || !Array.isArray(devices) || devices.length === 0) {
+      return "No devices";
+    }
+    return devices.map((d) => {
+      const deviceName = d?.device || "Unknown";
+      const hours = d?.hours || 0;
+      return `${deviceName} (${hours}h)`;
+    }).join(", ");
   };
 
   if (showLoginModal) {
@@ -471,15 +538,15 @@ const Profile = () => {
                           <div className="flex items-center gap-2 mb-2">
                             <Badge variant="secondary" className="text-xs">
                               <Brain className="h-3 w-3 mr-1" />
-                              {prediction.modelUsed}
+                              {prediction.modelUsed || "N/A"}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
                               <Thermometer className="h-3 w-3 mr-1" />
-                              {prediction.temperature}°C
+                              {prediction.temperature != null ? `${prediction.temperature}°C` : "N/A"}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
                               <Calendar className="h-3 w-3 mr-1" />
-                              {formatDate(prediction.date)}
+                              {prediction.date ? formatDate(prediction.date) : "N/A"}
                             </Badge>
                           </div>
 
@@ -487,25 +554,31 @@ const Profile = () => {
                             <div>
                               <span className="text-gray-400">Predicted:</span>
                               <span className="text-white font-semibold ml-2">
-                                {prediction.predictedConsumption} kWh
+                                {prediction.predictedConsumption != null 
+                                  ? `${prediction.predictedConsumption} kWh` 
+                                  : "N/A"}
                               </span>
                             </div>
                             <div>
                               <span className="text-gray-400">Confidence:</span>
                               <span className="text-green-400 font-semibold ml-2">
-                                {prediction.confidence}%
+                                {prediction.confidence != null 
+                                  ? `${prediction.confidence}%` 
+                                  : "N/A"}
                               </span>
                             </div>
                             <div>
                               <span className="text-gray-400">Household:</span>
                               <span className="text-white font-semibold ml-2">
-                                {prediction.householdSize} people
+                                {prediction.householdSize != null 
+                                  ? `${prediction.householdSize} people` 
+                                  : "N/A"}
                               </span>
                             </div>
                             <div>
                               <span className="text-gray-400">Season:</span>
                               <span className="text-white font-semibold ml-2">
-                                {prediction.season}
+                                {prediction.season || "N/A"}
                               </span>
                             </div>
                           </div>
@@ -522,10 +595,10 @@ const Profile = () => {
 
                         <div className="flex flex-col items-end gap-2">
                           <div className="text-xs text-gray-400">
-                            {formatDate(prediction.createdAt)}
+                            {prediction.createdAt ? formatDate(prediction.createdAt) : "N/A"}
                           </div>
                           <Progress
-                            value={prediction.confidence}
+                            value={prediction.confidence != null ? prediction.confidence : 0}
                             className="w-20"
                           />
                         </div>

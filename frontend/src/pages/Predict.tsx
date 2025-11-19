@@ -203,18 +203,9 @@ const Predict = () => {
 
   const fetchCurrentWeather = async () => {
     setWeatherLoading(true);
-    const fallback = (label: string) => {
-      const temp = 25;
-      setTemperature(temp);
-      setWeatherData({
-        temperature: temp,
-        description: label,
-        humidity: 50,
-        windSpeed: 2.0,
-      });
-    };
-
+    
     try {
+      // Try to get location-based weather first
       if (navigator.geolocation) {
         await new Promise<void>((resolve) => {
           navigator.geolocation.getCurrentPosition(
@@ -226,40 +217,57 @@ const Predict = () => {
                 );
                 if (res.ok) {
                   const weather = await res.json();
-                  const newTemp = Math.round(weather.temperature);
-                  setTemperature(newTemp);
+                  setTemperature(weather.temperature);
                   setWeatherData(weather);
-                } else {
-                  fallback("Weather unavailable (location)");
+                  console.log('✅ Weather data loaded (location-based):', weather);
+                  resolve();
+                  return;
                 }
-              } catch {
-                fallback("Weather error (location)");
+              } catch (error) {
+                console.log('Location weather failed:', error);
               }
               resolve();
             },
             () => {
+              console.log('Location access denied, using default weather');
               resolve();
-            }
+            },
+            { timeout: 5000 }
           );
         });
       }
 
+      // If location failed or no temperature set, get default weather
       if (temperature === null) {
-        const response = await fetch(
-          "http://localhost:3001/api/weather/current"
-        );
+        const response = await fetch("http://localhost:3001/api/weather/current");
         if (response.ok) {
           const weather = await response.json();
-          const newTemp = Math.round(weather.temperature);
-          setTemperature(newTemp);
+          setTemperature(weather.temperature);
           setWeatherData(weather);
+          console.log('✅ Weather data loaded (default):', weather);
         } else {
-          fallback("Weather unavailable");
+          throw new Error('Weather API failed');
         }
       }
     } catch (error) {
-      console.log("Weather fetch error:", error);
-      fallback("Weather error");
+      console.log('Weather fetch error:', error);
+      // Provide local fallback
+      const hour = new Date().getHours();
+      const month = new Date().getMonth() + 1;
+      let temp = 22;
+      if (month >= 4 && month <= 9) temp = 28; // Summer
+      if (month >= 11 || month <= 2) temp = 16; // Winter
+      if (hour >= 14 && hour <= 18) temp += 4; // Afternoon
+      if (hour >= 22 || hour <= 5) temp -= 5; // Night
+      
+      setTemperature(temp);
+      setWeatherData({
+        temperature: temp,
+        description: 'mock data (API offline)',
+        humidity: 55,
+        windSpeed: 3.2,
+      });
+      console.log('⚠️ Using local weather fallback:', temp + '°C');
     }
 
     setWeatherLoading(false);
@@ -412,7 +420,7 @@ const Predict = () => {
         const token = localStorage.getItem("token");
         if (token) {
           try {
-            await fetch("http://localhost:3001/api/store-prediction", {
+            const storeResponse = await fetch("http://localhost:3001/api/store-prediction", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -429,9 +437,23 @@ const Predict = () => {
                 confidence: Math.round(data.model_scores.random_forest * 100),
               }),
             });
+
+            if (storeResponse.ok) {
+              const storeData = await storeResponse.json();
+              console.log("Prediction stored successfully:", storeData);
+              // Optionally show a success message
+              // You can add a toast notification here if you have one
+            } else {
+              const errorText = await storeResponse.text();
+              console.error("Failed to store prediction:", storeResponse.status, errorText);
+              // Don't show alert to user as prediction was successful, just storage failed
+            }
           } catch (error) {
-            console.log("Failed to store prediction:", error);
+            console.error("Failed to store prediction:", error);
+            // Don't show alert to user as prediction was successful, just storage failed
           }
+        } else {
+          console.warn("No authentication token found. Prediction not saved to history.");
         }
       } else {
         const errorData = await response.json();
@@ -537,12 +559,14 @@ const Predict = () => {
                     <div className="text-xs text-gray-400 mb-2">
                       🌡️ {weatherData.temperature}°C, {weatherData.description},
                       💧 {weatherData.humidity}%, 🌬️ {weatherData.windSpeed}m/s
+                      {weatherData.description.includes('mock') && (
+                        <span className="text-yellow-400 ml-2">(Demo Mode)</span>
+                      )}
                     </div>
                   )}
                   {!weatherData && (
                     <div className="text-xs text-yellow-400 mb-2">
-                      ⚠️ Click "Current Weather" to get real temperature from
-                      your location
+                      💡 Click "Current Weather" to load temperature data
                     </div>
                   )}
                   <Slider

@@ -62,29 +62,77 @@ export default function LoginModal({ onClose, onLogin }: LoginModalProps) {
         body: JSON.stringify(body)
       });
 
-      const data = await response.json();
+      // Check if response is ok before trying to parse JSON
+      let data;
+      try {
+        const text = await response.text();
+        if (text) {
+          data = JSON.parse(text);
+        } else {
+          data = {};
+        }
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        toast.error('Invalid response from server');
+        setLoading(false);
+        return;
+      }
 
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        if (isLogin) {
-          toast.success('Login successful!');
-          onLogin(data.user);
+        // Check if we have token and user data
+        if (data.token && data.user) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          
+          if (isLogin) {
+            toast.success('Login successful!');
+            onLogin(data.user);
+            onClose(); // Close modal after successful login
+          } else {
+            // Auto-login after successful signup
+            toast.success('Account created successfully!');
+            onLogin(data.user);
+            onClose(); // Close modal after successful signup
+          }
         } else {
-          toast.success('Account created! Please login.');
-          setIsLogin(true);
-          setFirstName('');
-          setLastName('');
-          setEmail('');
-          setPassword('');
-          setConfirmPassword('');
+          // Signup succeeded but no token (shouldn't happen, but handle it)
+          if (!isLogin) {
+            toast.success('Account created! Please login.');
+            setIsLogin(true);
+            setFirstName('');
+            setLastName('');
+            setEmail('');
+            setPassword('');
+            setConfirmPassword('');
+          } else {
+            toast.error('Invalid response from server');
+          }
         }
       } else {
-        toast.error(data.error);
+        // Handle error response
+        const errorMessage = data.error || data.details || `Server error (${response.status})`;
+        toast.error(errorMessage);
+        console.error('API Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: data.error,
+          details: data.details,
+          fullData: data
+        });
       }
     } catch (error) {
-      toast.error('Connection error');
+      console.error('Request error:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
+      // Show more specific error message
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        toast.error('Cannot connect to server. Please ensure the backend is running.');
+      } else {
+        toast.error(error instanceof Error ? error.message : 'Connection error. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
