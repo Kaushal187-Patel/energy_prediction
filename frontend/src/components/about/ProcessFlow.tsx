@@ -12,19 +12,19 @@ const ProcessFlow = () => {
 
   return (
     <section className="mb-16">
-      <h2 className="text-3xl font-bold text-white mb-8 text-center">How Predictions Work</h2>
+      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">How Predictions Work</h2>
       <div className="grid md:grid-cols-4 gap-6">
         {steps.map((item, index) => (
-          <Card key={index} className="bg-white/5 border-white/10 text-center">
+          <Card key={index} className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 text-center">
             <CardContent className="p-6">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg mb-4">
                 {item.step}
               </div>
               <div className="mb-4">
-                <item.icon className="h-8 w-8 text-green-400 mx-auto" />
+                <item.icon className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto" />
               </div>
-              <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
-              <p className="text-gray-300 text-sm">{item.description}</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">{item.title}</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">{item.description}</p>
             </CardContent>
           </Card>
         ))}

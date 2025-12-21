@@ -24,19 +24,24 @@ import {
   LogIn,
   LogOut,
   Menu,
+  Moon,
   Settings,
+  Sun,
   TrendingUp,
   User,
   Users,
   X,
   Zap,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import LoginModal from "./LoginModal";
 import ProfileModal from "./ProfileModal";
 
 const Navigation = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -44,6 +49,10 @@ const Navigation = () => {
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user") || "null")
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -82,7 +91,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-white/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-gray-200/50 dark:border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -104,8 +113,8 @@ const Navigation = () => {
                 className={({ isActive }) =>
                   `flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? "bg-green-500/20 text-green-400 energy-glow"
-                      : "text-gray-300 hover:text-white hover:bg-white/10"
+                      ? "bg-green-500/20 text-green-600 dark:text-green-400 energy-glow"
+                      : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
                   }`
                 }
               >
@@ -113,9 +122,25 @@ const Navigation = () => {
                 <span className="text-sm font-medium">{label}</span>
               </NavLink>
             ))}
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+                <span className="text-sm font-medium">
+                  {theme === "dark" ? "Light" : "Dark"}
+                </span>
+              </button>
+            )}
             {user ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 text-gray-300 hover:text-white hover:bg-white/10">
+                <DropdownMenuTrigger className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10">
                   <User className="h-4 w-4" />
                   <span className="text-sm font-medium">
                     {user.name.split(" ")[0]}
@@ -145,7 +170,7 @@ const Navigation = () => {
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 text-gray-300 hover:text-white hover:bg-white/10"
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 <LogIn className="h-4 w-4" />
                 <span className="text-sm font-medium">Login</span>
@@ -159,7 +184,7 @@ const Navigation = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-300 hover:text-white"
+              className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
             >
               {isOpen ? (
                 <X className="h-6 w-6" />
@@ -182,8 +207,8 @@ const Navigation = () => {
                   className={({ isActive }) =>
                     `flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? "bg-green-500/20 text-green-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/10"
+                        ? "bg-green-500/20 text-green-600 dark:text-green-400"
+                        : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
                     }`
                   }
                 >
@@ -191,9 +216,27 @@ const Navigation = () => {
                   <span className="font-medium">{label}</span>
                 </NavLink>
               ))}
+              {mounted && (
+                <button
+                  onClick={() => {
+                    setTheme(theme === "dark" ? "light" : "dark");
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 w-full text-left"
+                >
+                  {theme === "dark" ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                  <span className="font-medium">
+                    {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                  </span>
+                </button>
+              )}
               {user ? (
                 <>
-                  <div className="flex items-center space-x-3 px-4 py-3 text-gray-300">
+                  <div className="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300">
                     <User className="h-5 w-5" />
                     <span className="font-medium">
                       {user.name.split(" ")[0]}
@@ -204,7 +247,7 @@ const Navigation = () => {
                       setShowLogoutConfirm(true);
                       setIsOpen(false);
                     }}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-300 hover:text-white hover:bg-white/10 w-full text-left"
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 w-full text-left"
                   >
                     <LogOut className="h-5 w-5" />
                     <span className="font-medium">Logout</span>
@@ -216,7 +259,7 @@ const Navigation = () => {
                     setShowLogin(true);
                     setIsOpen(false);
                   }}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-300 hover:text-white hover:bg-white/10 w-full text-left"
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 w-full text-left"
                 >
                   <LogIn className="h-5 w-5" />
                   <span className="font-medium">Login</span>

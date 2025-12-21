@@ -51,30 +51,30 @@ const PlatformFeatures = () => {
 
   return (
     <section className="mb-16">
-      <h2 className="text-3xl font-bold text-white mb-8 text-center">
+      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
         Platform Features
       </h2>
       <div className="grid md:grid-cols-2 gap-8">
         {features.map((feature, index) => (
           <Card
             key={index}
-            className="bg-white/5 border-white/10 hover:bg-white/8 transition-all duration-300"
+            className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/8 transition-all duration-300"
           >
             <CardContent className="p-8">
               <div className="flex items-center mb-6">
                 <div className="p-3 rounded-lg bg-gradient-to-r from-green-500/20 to-blue-500/20 mr-4">
-                  <feature.icon className="h-8 w-8 text-green-400" />
+                  <feature.icon className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {feature.title}
                 </h3>
               </div>
-              <p className="text-gray-300 mb-6">{feature.description}</p>
+              <p className="text-gray-700 dark:text-gray-300 mb-6">{feature.description}</p>
               <div className="space-y-2">
                 {feature.details.map((detail, detailIndex) => (
                   <div key={detailIndex} className="flex items-center text-sm">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
-                    <span className="text-gray-200">{detail}</span>
+                    <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mr-3"></div>
+                    <span className="text-gray-700 dark:text-gray-200">{detail}</span>
                   </div>
                 ))}
               </div>

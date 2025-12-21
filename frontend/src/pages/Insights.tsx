@@ -140,7 +140,7 @@ const Insights = () => {
 
   return (
     <div
-      className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10 dark:from-transparent dark:via-transparent dark:to-transparent"
       data-aos="fade-up"
       data-aos-duration="1000"
     >
@@ -151,17 +151,17 @@ const Insights = () => {
             <TrendingUp className="h-4 w-4 mr-2" />
             AI-Powered Energy Insights
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Smart Energy Insights
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
             Discover personalized recommendations to optimize your energy usage
             and maximize savings
           </p>
         </div>
 
         <Tabs defaultValue="insights" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 bg-white/10">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-white/10">
             <TabsTrigger
               value="insights"
               className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400"
@@ -189,17 +189,17 @@ const Insights = () => {
                 return (
                   <Card
                     key={index}
-                    className="bg-white/5 border-white/10 hover:bg-white/8 transition-all duration-300"
+                    className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/8 transition-all duration-300"
                   >
                     <CardContent className="p-6">
                       <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                         <div className="flex items-start space-x-4 flex-1">
                           <div className="p-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-blue-500/20">
-                            <IconComponent className="h-6 w-6 text-purple-400" />
+                            <IconComponent className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="text-xl font-semibold text-white">
+                              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                                 {insight.title}
                               </h3>
                               <Badge
@@ -210,10 +210,10 @@ const Insights = () => {
                                 {insight.impact} Impact
                               </Badge>
                             </div>
-                            <p className="text-gray-300 mb-3">
+                            <p className="text-gray-700 dark:text-gray-300 mb-3">
                               {insight.description}
                             </p>
-                            <p className="text-gray-200 bg-white/5 p-3 rounded-lg border-l-4 border-purple-400">
+                            <p className="text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-white/5 p-3 rounded-lg border-l-4 border-purple-500 dark:border-purple-400">
                               💡 <strong>Recommendation:</strong>{" "}
                               {insight.recommendation}
                             </p>
@@ -221,16 +221,16 @@ const Insights = () => {
                         </div>
                         <div className="flex flex-col items-center lg:items-end space-y-2 min-w-[140px]">
                           <div className="text-center lg:text-right">
-                            <div className="text-2xl font-bold text-green-400">
+                            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                               {insight.savings}
                             </div>
-                            <div className="text-sm text-gray-400">
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
                               Potential Savings
                             </div>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <DollarSign className="h-4 w-4 text-green-400" />
-                            <span className="text-green-400 text-sm font-medium">
+                            <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            <span className="text-green-600 dark:text-green-400 text-sm font-medium">
                               High ROI
                             </span>
                           </div>
@@ -246,23 +246,23 @@ const Insights = () => {
           <TabsContent value="goals" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               {goals.map((goal, index) => (
-                <Card key={index} className="bg-white/5 border-white/10">
+                <Card key={index} className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
                   <CardHeader>
-                    <CardTitle className="text-white text-lg">
+                    <CardTitle className="text-gray-900 dark:text-white text-lg">
                       {goal.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Current</span>
-                        <span className="text-white font-semibold">
+                        <span className="text-gray-700 dark:text-gray-300">Current</span>
+                        <span className="text-gray-900 dark:text-white font-semibold">
                           {goal.current} {goal.unit}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300">Target</span>
-                        <span className="text-green-400 font-semibold">
+                        <span className="text-gray-700 dark:text-gray-300">Target</span>
+                        <span className="text-green-600 dark:text-green-400 font-semibold">
                           {goal.target} {goal.unit}
                         </span>
                       </div>
@@ -271,16 +271,16 @@ const Insights = () => {
                           (goal.current / goal.target) * 100,
                           100
                         )}
-                        className="h-3 bg-white/10"
+                        className="h-3 bg-gray-200 dark:bg-white/10"
                       />
                       <div className="text-center">
                         <span
                           className={`text-sm font-medium ${
                             goal.current >= goal.target
-                              ? "text-green-400"
+                              ? "text-green-600 dark:text-green-400"
                               : goal.current >= goal.target * 0.8
-                              ? "text-yellow-400"
-                              : "text-gray-400"
+                              ? "text-yellow-600 dark:text-yellow-400"
+                              : "text-gray-600 dark:text-gray-400"
                           }`}
                         >
                           {Math.min(
@@ -313,8 +313,8 @@ const Insights = () => {
                       <div
                         className={`p-4 rounded-full ${
                           achievement.earned
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-gray-500/20 text-gray-400"
+                            ? "bg-green-500/20 text-green-600 dark:text-green-400"
+                            : "bg-gray-500/20 text-gray-600 dark:text-gray-400"
                         }`}
                       >
                         {achievement.earned ? (
@@ -326,7 +326,7 @@ const Insights = () => {
                       <div className="flex-1">
                         <h3
                           className={`text-lg font-semibold mb-1 ${
-                            achievement.earned ? "text-white" : "text-gray-400"
+                            achievement.earned ? "text-gray-900 dark:text-white" : "text-gray-600 dark:text-gray-400"
                           }`}
                         >
                           {achievement.title}
@@ -334,15 +334,15 @@ const Insights = () => {
                         <p
                           className={
                             achievement.earned
-                              ? "text-gray-200"
-                              : "text-gray-500"
+                              ? "text-gray-800 dark:text-gray-200"
+                              : "text-gray-600 dark:text-gray-500"
                           }
                         >
                           {achievement.description}
                         </p>
                       </div>
                       {achievement.earned && (
-                        <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                        <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">
                           Earned
                         </Badge>
                       )}

@@ -90,7 +90,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10 dark:from-transparent dark:via-transparent dark:to-transparent">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div
@@ -99,10 +99,10 @@ const Dashboard = () => {
           data-aos-duration="1000"
         >
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Energy Dashboard
             </h1>
-            <p className="text-gray-300">
+            <p className="text-gray-700 dark:text-gray-300">
               Monitor your energy consumption and savings in real-time
             </p>
           </div>
@@ -136,15 +136,15 @@ const Dashboard = () => {
           {stats.map((stat, index) => (
             <Card
               key={index}
-              className="bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10 transition-all duration-300"
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-300 text-sm font-medium">
+                    <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">
                       {stat.title}
                     </p>
-                    <p className="text-2xl font-bold text-white mt-1">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                       {stat.value}
                     </p>
                   </div>
@@ -167,7 +167,7 @@ const Dashboard = () => {
                   >
                     {Math.abs(stat.change)}%
                   </span>
-                  <span className="text-gray-400 text-sm ml-1">
+                  <span className="text-gray-600 dark:text-gray-400 text-sm ml-1">
                     from last month
                   </span>
                 </div>
@@ -178,15 +178,15 @@ const Dashboard = () => {
 
         {/* Energy Analysis Results */}
         <Card
-          className="bg-white/5 border-white/10 mb-8"
+          className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 mb-8"
           data-aos="fade-up"
           data-aos-duration="1000"
         >
           <CardHeader>
-            <CardTitle className="text-white text-xl">
+            <CardTitle className="text-gray-900 dark:text-white text-xl">
               Energy Analysis Results
             </CardTitle>
-            <p className="text-gray-300 text-sm">
+            <p className="text-gray-700 dark:text-gray-300 text-sm">
               Comprehensive analysis of energy consumption patterns and
               predictions
             </p>
@@ -213,7 +213,7 @@ const Dashboard = () => {
           data-aos="fade-up"
           data-aos-duration="1000"
         >
-          <TabsList className="grid w-full grid-cols-6 bg-white/10">
+          <TabsList className="grid w-full grid-cols-6 bg-gray-100 dark:bg-white/10">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400"
@@ -255,9 +255,9 @@ const Dashboard = () => {
           <TabsContent value="overview" className="space-y-6">
 
             <div className="grid lg:grid-cols-2 gap-6">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-gray-900 dark:text-white">
                     Weekly Consumption
                   </CardTitle>
                 </CardHeader>
@@ -296,9 +296,9 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-gray-900 dark:text-white">
                     Daily Costs & Savings
                   </CardTitle>
                 </CardHeader>
@@ -337,28 +337,28 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="realtime">
-            <div className="bg-white/5 border-white/10 rounded-lg p-6">
+            <div className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 rounded-lg p-6">
               <RealTimeMonitoring />
             </div>
           </TabsContent>
 
           <TabsContent value="analytics">
-            <div className="bg-white/5 border-white/10 rounded-lg p-6">
+            <div className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 rounded-lg p-6">
               <AdvancedAnalytics />
             </div>
           </TabsContent>
 
           <TabsContent value="optimization">
-            <div className="bg-white/5 border-white/10 rounded-lg p-6">
+            <div className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 rounded-lg p-6">
               <CostOptimization />
             </div>
           </TabsContent>
 
           <TabsContent value="weekly" className="space-y-6">
             <div className="grid lg:grid-cols-2 gap-6">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-gray-900 dark:text-white">
                     Weekly Consumption
                   </CardTitle>
                 </CardHeader>
@@ -397,9 +397,9 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-gray-900 dark:text-white">
                     Daily Costs & Savings
                   </CardTitle>
                 </CardHeader>
@@ -480,9 +480,9 @@ const Dashboard = () => {
 
           <TabsContent value="breakdown">
             <div className="grid lg:grid-cols-2 gap-6">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-gray-900 dark:text-white">
                     Energy Usage by Appliance
                   </CardTitle>
                 </CardHeader>
@@ -514,9 +514,9 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-gray-900 dark:text-white">
                     Appliance Breakdown
                   </CardTitle>
                 </CardHeader>
@@ -525,22 +525,22 @@ const Dashboard = () => {
                     {applianceData.map((item, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-lg"
                       >
                         <div className="flex items-center space-x-3">
                           <div
                             className="w-4 h-4 rounded-full"
                             style={{ backgroundColor: item.color }}
                           ></div>
-                          <span className="text-white font-medium">
+                          <span className="text-gray-900 dark:text-white font-medium">
                             {item.name}
                           </span>
                         </div>
                         <div className="text-right">
-                          <div className="text-white font-bold">
+                          <div className="text-gray-900 dark:text-white font-bold">
                             {item.value}%
                           </div>
-                          <div className="text-gray-400 text-sm">
+                          <div className="text-gray-600 dark:text-gray-400 text-sm">
                             {(item.value * 2.68).toFixed(0)} kWh
                           </div>
                         </div>
@@ -555,16 +555,16 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <Card
-          className="bg-white/5 border-white/10 mt-8"
+          className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10 mt-8"
           data-aos="fade-up"
           data-aos-duration="1000"
         >
           <CardHeader>
-            <CardTitle className="text-white">Quick Actions</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-white/20 text-white hover:bg-white/10">
+              <Button variant="outline" className="h-20 flex flex-col items-center space-y-2 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10">
                 <Activity className="h-6 w-6" />
                 <span className="text-sm">Live Monitor</span>
               </Button>

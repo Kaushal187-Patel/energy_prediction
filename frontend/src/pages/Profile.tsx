@@ -293,7 +293,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 lg:px-8">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 lg:px-8 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10 dark:from-transparent dark:via-transparent dark:to-transparent">
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div
@@ -305,10 +305,10 @@ const Profile = () => {
             <User className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
             Energy Prediction Profile
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Your Energy Consumption History
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg text-gray-300 px-2">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300 px-2">
             Track your prediction history and energy consumption patterns over
             time.
           </p>
@@ -330,19 +330,19 @@ const Profile = () => {
           data-aos="fade-up"
           data-aos-duration="1000"
         >
-          <Card className="bg-white/5 border-white/10">
+          <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
             <CardContent className="p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-blue-500/20 rounded-full">
-                    <User className="h-6 w-6 text-blue-400" />
+                    <User className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                       {user?.name || "User"}
                     </h2>
-                    <p className="text-gray-400 text-sm">{user?.email}</p>
-                    <p className="text-gray-500 text-xs">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">{user?.email}</p>
+                    <p className="text-gray-600 dark:text-gray-500 text-xs">
                       Member since{" "}
                       {profile?.joinDate ? formatDate(profile.joinDate) : "N/A"}
                     </p>
@@ -369,9 +369,9 @@ const Profile = () => {
           data-aos="fade-up"
           data-aos-duration="1000"
         >
-          <Card className="bg-white/5 border-white/10">
+          <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl flex items-center">
+              <CardTitle className="text-lg sm:text-xl flex items-center text-gray-900 dark:text-white">
                 <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Prediction Statistics
               </CardTitle>
@@ -380,48 +380,48 @@ const Profile = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <Database className="h-4 w-4 text-blue-400 mr-2" />
-                    <span className="text-sm font-medium text-blue-400">
+                    <Database className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" />
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
                       Total Predictions
                     </span>
                   </div>
-                  <div className="text-lg font-bold text-white">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
                     {stats.totalPredictions}
                   </div>
                 </div>
 
                 <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <TrendingUp className="h-4 w-4 text-green-400 mr-2" />
-                    <span className="text-sm font-medium text-green-400">
+                    <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400 mr-2" />
+                    <span className="text-sm font-medium text-green-600 dark:text-green-400">
                       Avg Consumption
                     </span>
                   </div>
-                  <div className="text-lg font-bold text-white">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
                     {stats.averageConsumption} kWh
                   </div>
                 </div>
 
                 <div className="p-4 bg-purple-500/10 border border-purple-500/20 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <Brain className="h-4 w-4 text-purple-400 mr-2" />
-                    <span className="text-sm font-medium text-purple-400">
+                    <Brain className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" />
+                    <span className="text-sm font-medium text-purple-600 dark:text-purple-400">
                       Favorite Model
                     </span>
                   </div>
-                  <div className="text-lg font-bold text-white">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
                     {stats.mostUsedModel || "N/A"}
                   </div>
                 </div>
 
                 <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
                   <div className="flex items-center mb-2">
-                    <Zap className="h-4 w-4 text-orange-400 mr-2" />
-                    <span className="text-sm font-medium text-orange-400">
+                    <Zap className="h-4 w-4 text-orange-600 dark:text-orange-400 mr-2" />
+                    <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
                       Total Devices
                     </span>
                   </div>
-                  <div className="text-lg font-bold text-white">
+                  <div className="text-lg font-bold text-gray-900 dark:text-white">
                     {stats.totalDevices}
                   </div>
                 </div>
@@ -436,9 +436,9 @@ const Profile = () => {
           data-aos="fade-up"
           data-aos-duration="1000"
         >
-          <Card className="bg-white/5 border-white/10">
+          <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl flex items-center">
+              <CardTitle className="text-lg sm:text-xl flex items-center text-gray-900 dark:text-white">
                 <Activity className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Consumption Analysis
               </CardTitle>
@@ -447,47 +447,47 @@ const Profile = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Highest Consumption
                     </span>
-                    <Target className="h-4 w-4 text-blue-400" />
+                    <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats.highestConsumption} kWh
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
                     Peak usage recorded
                   </div>
                 </div>
 
                 <div className="p-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 border border-green-500/30 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Lowest Consumption
                     </span>
-                    <Activity className="h-4 w-4 text-green-400" />
+                    <Activity className="h-4 w-4 text-green-600 dark:text-green-400" />
                   </div>
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats.lowestConsumption} kWh
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
                     Minimum usage recorded
                   </div>
                 </div>
 
                 <div className="p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-300">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Last Prediction
                     </span>
-                    <Clock className="h-4 w-4 text-purple-400" />
+                    <Clock className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <div className="text-sm font-bold text-white">
+                  <div className="text-sm font-bold text-gray-900 dark:text-white">
                     {profile?.lastPrediction
                       ? formatDate(profile.lastPrediction)
                       : "N/A"}
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
                     Most recent prediction
                   </div>
                 </div>
@@ -502,9 +502,9 @@ const Profile = () => {
           data-aos="fade-up"
           data-aos-duration="1000"
         >
-          <Card className="bg-white/5 border-white/10">
+          <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl flex items-center">
+              <CardTitle className="text-lg sm:text-xl flex items-center text-gray-900 dark:text-white">
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Prediction History
               </CardTitle>
@@ -513,15 +513,15 @@ const Profile = () => {
               {isLoading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-                  <p className="text-gray-400">Loading prediction history...</p>
+                  <p className="text-gray-600 dark:text-gray-400">Loading prediction history...</p>
                 </div>
               ) : predictions.length === 0 ? (
                 <div className="text-center py-8">
                   <Database className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-                  <p className="text-gray-400">
+                  <p className="text-gray-600 dark:text-gray-400">
                     No predictions found. Start predicting to see your history!
                   </p>
-                  <p className="text-gray-500 text-sm mt-2">
+                  <p className="text-gray-600 dark:text-gray-500 text-sm mt-2">
                     Go to the Predict page to make your first energy consumption
                     prediction.
                   </p>
@@ -531,7 +531,7 @@ const Profile = () => {
                   {predictions.map((prediction, index) => (
                     <div
                       key={prediction.id || index}
-                      className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+                      className="p-4 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex-1">
@@ -552,49 +552,49 @@ const Profile = () => {
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                             <div>
-                              <span className="text-gray-400">Predicted:</span>
-                              <span className="text-white font-semibold ml-2">
+                              <span className="text-gray-600 dark:text-gray-400">Predicted:</span>
+                              <span className="text-gray-900 dark:text-white font-semibold ml-2">
                                 {prediction.predictedConsumption != null 
                                   ? `${prediction.predictedConsumption} kWh` 
                                   : "N/A"}
                               </span>
                             </div>
                             <div>
-                              <span className="text-gray-400">Confidence:</span>
-                              <span className="text-green-400 font-semibold ml-2">
+                              <span className="text-gray-600 dark:text-gray-400">Confidence:</span>
+                              <span className="text-green-600 dark:text-green-400 font-semibold ml-2">
                                 {prediction.confidence != null 
                                   ? `${prediction.confidence}%` 
                                   : "N/A"}
                               </span>
                             </div>
                             <div>
-                              <span className="text-gray-400">Household:</span>
-                              <span className="text-white font-semibold ml-2">
+                              <span className="text-gray-600 dark:text-gray-400">Household:</span>
+                              <span className="text-gray-900 dark:text-white font-semibold ml-2">
                                 {prediction.householdSize != null 
                                   ? `${prediction.householdSize} people` 
                                   : "N/A"}
                               </span>
                             </div>
                             <div>
-                              <span className="text-gray-400">Season:</span>
-                              <span className="text-white font-semibold ml-2">
+                              <span className="text-gray-600 dark:text-gray-400">Season:</span>
+                              <span className="text-gray-900 dark:text-white font-semibold ml-2">
                                 {prediction.season || "N/A"}
                               </span>
                             </div>
                           </div>
 
                           <div className="mt-2">
-                            <span className="text-gray-400 text-xs">
+                            <span className="text-gray-600 dark:text-gray-400 text-xs">
                               Devices:
                             </span>
-                            <p className="text-white text-xs mt-1">
+                            <p className="text-gray-900 dark:text-white text-xs mt-1">
                               {getDeviceSummary(prediction.devices)}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex flex-col items-end gap-2">
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
                             {prediction.createdAt ? formatDate(prediction.createdAt) : "N/A"}
                           </div>
                           <Progress

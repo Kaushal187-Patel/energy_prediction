@@ -156,14 +156,14 @@ const Team = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10 dark:from-transparent dark:via-transparent dark:to-transparent">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-16" data-aos="fade-up">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-6">
             Our Team
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
             Meet the passionate individuals behind Energy AI - dedicated to revolutionizing 
             energy consumption prediction through cutting-edge machine learning
           </p>
@@ -196,13 +196,13 @@ const Team = () => {
                     />
                   </div>
                   <div className="space-y-3 transform group-hover:translate-y-1 transition-transform duration-300">
-                    <h3 className="text-xl font-bold text-white group-hover:text-green-300 transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-300 transition-colors duration-300">
                       {member.name}
                     </h3>
-                    <p className="text-green-400 font-semibold text-lg group-hover:text-green-300 transition-colors duration-300">
+                    <p className="text-green-600 dark:text-green-400 font-semibold text-lg group-hover:text-green-600 dark:group-hover:text-green-300 transition-colors duration-300">
                       {member.role}
                     </p>
-                    <p className="text-blue-300 text-sm leading-relaxed group-hover:text-blue-200 transition-colors duration-300">
+                    <p className="text-blue-600 dark:text-blue-300 text-sm leading-relaxed group-hover:text-blue-600 dark:group-hover:text-blue-200 transition-colors duration-300">
                       {member.expertise}
                     </p>
                   </div>
@@ -217,20 +217,20 @@ const Team = () => {
         <div className="glass-morphism border-white/10 rounded-2xl p-8" data-aos="fade-up">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <h3 className="text-3xl font-bold text-green-400 mb-2">4</h3>
-              <p className="text-gray-300">Team Members</p>
+              <h3 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">4</h3>
+              <p className="text-gray-700 dark:text-gray-300">Team Members</p>
             </div>
             <div>
-              <h3 className="text-3xl font-bold text-blue-400 mb-2">3+</h3>
-              <p className="text-gray-300">ML Models</p>
+              <h3 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">3+</h3>
+              <p className="text-gray-700 dark:text-gray-300">ML Models</p>
             </div>
             <div>
-              <h3 className="text-3xl font-bold text-purple-400 mb-2">88%</h3>
-              <p className="text-gray-300">Accuracy</p>
+              <h3 className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">88%</h3>
+              <p className="text-gray-700 dark:text-gray-300">Accuracy</p>
             </div>
             <div>
-              <h3 className="text-3xl font-bold text-cyan-400 mb-2">24/7</h3>
-              <p className="text-gray-300">Support</p>
+              <h3 className="text-3xl font-bold text-cyan-600 dark:text-cyan-400 mb-2">24/7</h3>
+              <p className="text-gray-700 dark:text-gray-300">Support</p>
             </div>
           </div>
         </div>
@@ -258,26 +258,26 @@ const Team = () => {
                     />
                   </div>
                   <div className="flex-1 text-left pl-4">
-                    <DialogTitle className="text-3xl font-bold text-white mb-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-1600">
+                    <DialogTitle className="text-3xl font-bold text-gray-900 dark:text-white mb-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-1600">
                       {selectedMember.name}
                     </DialogTitle>
-                    <h3 className="text-xl font-bold text-green-400 mb-3 animate-in fade-in-0 slide-in-from-left-2 duration-1700">
+                    <h3 className="text-xl font-bold text-green-600 dark:text-green-400 mb-3 animate-in fade-in-0 slide-in-from-left-2 duration-1700">
                       {selectedMember.role}
                     </h3>
-                    <p className="text-blue-300 font-medium mb-4 animate-in fade-in-0 slide-in-from-right-2 duration-1800">
+                    <p className="text-blue-600 dark:text-blue-300 font-medium mb-4 animate-in fade-in-0 slide-in-from-right-2 duration-1800">
                       {selectedMember.expertise}
                     </p>
-                    <p className="text-gray-300 leading-relaxed mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-1900">
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-1900">
                       {selectedMember.bio}
                     </p>
                     {selectedMember.email && (
-                      <p className="text-sm text-gray-400 mb-2 animate-in fade-in-0 slide-in-from-top-2 duration-2000">
-                        <span className="text-green-400 font-medium">Email:</span> {selectedMember.email}
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 animate-in fade-in-0 slide-in-from-top-2 duration-2000">
+                        <span className="text-green-600 dark:text-green-400 font-medium">Email:</span> {selectedMember.email}
                       </p>
                     )}
                     {selectedMember.education && (
-                      <p className="text-sm text-gray-400 mb-4 animate-in fade-in-0 slide-in-from-top-2 duration-2100">
-                        <span className="text-green-400 font-medium">Education:</span> {selectedMember.education}
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 animate-in fade-in-0 slide-in-from-top-2 duration-2100">
+                        <span className="text-green-600 dark:text-green-400 font-medium">Education:</span> {selectedMember.education}
                       </p>
                     )}
                   </div>
@@ -286,12 +286,12 @@ const Team = () => {
                   
                   {selectedMember.experience && (
                     <div className="animate-in fade-in-0 slide-in-from-left-4 duration-1200 delay-800">
-                      <h4 className="text-lg font-bold text-green-400 mb-3">Work Experience</h4>
+                      <h4 className="text-lg font-bold text-green-600 dark:text-green-400 mb-3">Work Experience</h4>
                       {selectedMember.experience.map((exp, index) => (
-                        <div key={index} className="bg-white/5 rounded-lg p-4 mb-3 hover:bg-white/10 transition-colors duration-300">
-                          <h5 className="text-white font-semibold">{exp.company}</h5>
-                          <p className="text-blue-300 text-sm">{exp.position} | {exp.duration}</p>
-                          <p className="text-gray-300 text-sm mt-2">{exp.description}</p>
+                        <div key={index} className="bg-gray-50 dark:bg-white/5 rounded-lg p-4 mb-3 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors duration-300">
+                          <h5 className="text-gray-900 dark:text-white font-semibold">{exp.company}</h5>
+                          <p className="text-blue-600 dark:text-blue-300 text-sm">{exp.position} | {exp.duration}</p>
+                          <p className="text-gray-700 dark:text-gray-300 text-sm mt-2">{exp.description}</p>
                         </div>
                       ))}
                     </div>
@@ -299,13 +299,13 @@ const Team = () => {
                   
                   {selectedMember.projects && (
                     <div className="animate-in fade-in-0 slide-in-from-right-4 duration-1200 delay-1000">
-                      <h4 className="text-lg font-bold text-green-400 mb-3">Projects</h4>
+                      <h4 className="text-lg font-bold text-green-600 dark:text-green-400 mb-3">Projects</h4>
                       {selectedMember.projects.map((project, index) => (
-                        <div key={index} className="bg-white/5 rounded-lg p-4 mb-3 hover:bg-white/10 transition-colors duration-300">
-                          <h5 className="text-white font-semibold">{project.name}</h5>
-                          <p className="text-gray-300 text-sm mt-1">{project.description}</p>
-                          <p className="text-blue-300 text-xs mt-2">
-                            <span className="text-green-400 font-medium">Tech:</span> {project.tech}
+                        <div key={index} className="bg-gray-50 dark:bg-white/5 rounded-lg p-4 mb-3 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors duration-300">
+                          <h5 className="text-gray-900 dark:text-white font-semibold">{project.name}</h5>
+                          <p className="text-gray-700 dark:text-gray-300 text-sm mt-1">{project.description}</p>
+                          <p className="text-blue-600 dark:text-blue-300 text-xs mt-2">
+                            <span className="text-green-600 dark:text-green-400 font-medium">Tech:</span> {project.tech}
                           </p>
                         </div>
                       ))}
@@ -314,16 +314,16 @@ const Team = () => {
                   
                   {selectedMember.skills && (
                     <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-1200 delay-1200">
-                      <h4 className="text-lg font-bold text-green-400 mb-3">Technical Skills</h4>
+                      <h4 className="text-lg font-bold text-green-600 dark:text-green-400 mb-3">Technical Skills</h4>
                       <div className="space-y-2">
-                        <p className="text-sm text-gray-400 hover:text-gray-200 transition-colors duration-700">
-                          <span className="text-green-400 font-medium">Languages:</span> {selectedMember.skills.languages}
+                        <p className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-700">
+                          <span className="text-green-600 dark:text-green-400 font-medium">Languages:</span> {selectedMember.skills.languages}
                         </p>
-                        <p className="text-sm text-gray-400 hover:text-gray-200 transition-colors duration-700">
-                          <span className="text-green-400 font-medium">Web Development:</span> {selectedMember.skills.web}
+                        <p className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-700">
+                          <span className="text-green-600 dark:text-green-400 font-medium">Web Development:</span> {selectedMember.skills.web}
                         </p>
-                        <p className="text-sm text-gray-400 hover:text-gray-200 transition-colors duration-700">
-                          <span className="text-green-400 font-medium">Tools:</span> {selectedMember.skills.tools}
+                        <p className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-700">
+                          <span className="text-green-600 dark:text-green-400 font-medium">Tools:</span> {selectedMember.skills.tools}
                         </p>
                       </div>
                     </div>

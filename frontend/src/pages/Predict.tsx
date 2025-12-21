@@ -203,7 +203,7 @@ const Predict = () => {
 
   const fetchCurrentWeather = async () => {
     setWeatherLoading(true);
-    
+
     try {
       // Try to get location-based weather first
       if (navigator.geolocation) {
@@ -219,17 +219,20 @@ const Predict = () => {
                   const weather = await res.json();
                   setTemperature(weather.temperature);
                   setWeatherData(weather);
-                  console.log('✅ Weather data loaded (location-based):', weather);
+                  console.log(
+                    "✅ Weather data loaded (location-based):",
+                    weather
+                  );
                   resolve();
                   return;
                 }
               } catch (error) {
-                console.log('Location weather failed:', error);
+                console.log("Location weather failed:", error);
               }
               resolve();
             },
             () => {
-              console.log('Location access denied, using default weather');
+              console.log("Location access denied, using default weather");
               resolve();
             },
             { timeout: 5000 }
@@ -239,18 +242,20 @@ const Predict = () => {
 
       // If location failed or no temperature set, get default weather
       if (temperature === null) {
-        const response = await fetch("http://localhost:3001/api/weather/current");
+        const response = await fetch(
+          "http://localhost:3001/api/weather/current"
+        );
         if (response.ok) {
           const weather = await response.json();
           setTemperature(weather.temperature);
           setWeatherData(weather);
-          console.log('✅ Weather data loaded (default):', weather);
+          console.log("✅ Weather data loaded (default):", weather);
         } else {
-          throw new Error('Weather API failed');
+          throw new Error("Weather API failed");
         }
       }
     } catch (error) {
-      console.log('Weather fetch error:', error);
+      console.log("Weather fetch error:", error);
       // Provide local fallback
       const hour = new Date().getHours();
       const month = new Date().getMonth() + 1;
@@ -259,15 +264,15 @@ const Predict = () => {
       if (month >= 11 || month <= 2) temp = 16; // Winter
       if (hour >= 14 && hour <= 18) temp += 4; // Afternoon
       if (hour >= 22 || hour <= 5) temp -= 5; // Night
-      
+
       setTemperature(temp);
       setWeatherData({
         temperature: temp,
-        description: 'mock data (API offline)',
+        description: "mock data (API offline)",
         humidity: 55,
         windSpeed: 3.2,
       });
-      console.log('⚠️ Using local weather fallback:', temp + '°C');
+      console.log("⚠️ Using local weather fallback:", temp + "°C");
     }
 
     setWeatherLoading(false);
@@ -420,23 +425,26 @@ const Predict = () => {
         const token = localStorage.getItem("token");
         if (token) {
           try {
-            const storeResponse = await fetch("http://localhost:3001/api/store-prediction", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                temperature,
-                householdSize,
-                season,
-                date,
-                devices,
-                predictedConsumption: rfPrediction,
-                modelUsed: "Random Forest",
-                confidence: Math.round(data.model_scores.random_forest * 100),
-              }),
-            });
+            const storeResponse = await fetch(
+              "http://localhost:3001/api/store-prediction",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  temperature,
+                  householdSize,
+                  season,
+                  date,
+                  devices,
+                  predictedConsumption: rfPrediction,
+                  modelUsed: "Random Forest",
+                  confidence: Math.round(data.model_scores.random_forest * 100),
+                }),
+              }
+            );
 
             if (storeResponse.ok) {
               const storeData = await storeResponse.json();
@@ -445,7 +453,11 @@ const Predict = () => {
               // You can add a toast notification here if you have one
             } else {
               const errorText = await storeResponse.text();
-              console.error("Failed to store prediction:", storeResponse.status, errorText);
+              console.error(
+                "Failed to store prediction:",
+                storeResponse.status,
+                errorText
+              );
               // Don't show alert to user as prediction was successful, just storage failed
             }
           } catch (error) {
@@ -453,7 +465,9 @@ const Predict = () => {
             // Don't show alert to user as prediction was successful, just storage failed
           }
         } else {
-          console.warn("No authentication token found. Prediction not saved to history.");
+          console.warn(
+            "No authentication token found. Prediction not saved to history."
+          );
         }
       } else {
         const errorData = await response.json();
@@ -482,7 +496,7 @@ const Predict = () => {
   }
 
   return (
-    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 lg:px-8">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 lg:px-8 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10 dark:from-transparent dark:via-transparent dark:to-transparent">
       <div className="max-w-4xl mx-auto">
         {/* Hero Section */}
         <div
@@ -494,10 +508,10 @@ const Predict = () => {
             <Database className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
             {apiStatus}
           </div>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
             Predict Your Energy Consumption
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg text-gray-300 px-2">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300 px-2">
             Enter your details below to predict your energy consumption using
             our model.
           </p>
@@ -509,23 +523,23 @@ const Predict = () => {
           data-aos="fade-up"
           data-aos-duration="1000"
         >
-          <Card className="bg-white/5 border-white/10">
+          <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl">
+              <CardTitle className="text-lg sm:text-xl text-gray-900 dark:text-white">
                 Input Parameters
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 sm:p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
-                  <label className="text-gray-200 text-xs sm:text-sm font-medium mb-2 block">
+                  <label className="text-gray-700 dark:text-gray-200 text-xs sm:text-sm font-medium mb-2 block">
                     Date
                   </label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="bg-white/10 text-white rounded p-2 sm:p-3 w-full text-sm sm:text-base"
+                    className="bg-gray-50 dark:bg-white/10 text-gray-900 dark:text-white rounded p-2 sm:p-3 w-full text-sm sm:text-base border border-gray-300 dark:border-white/20"
                   />
                 </div>
 
@@ -536,9 +550,9 @@ const Predict = () => {
                       <Thermometer className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
                       <label
                         htmlFor="temperature"
-                        className="text-gray-200 text-xs sm:text-sm font-medium"
+                        className="text-gray-700 dark:text-gray-200 text-xs sm:text-sm font-medium"
                       >
-                        Temperature (°C):{" "}
+                        Temp (°C):{" "}
                         {temperature !== null
                           ? temperature
                           : "Click Current Weather"}
@@ -559,8 +573,10 @@ const Predict = () => {
                     <div className="text-xs text-gray-400 mb-2">
                       🌡️ {weatherData.temperature}°C, {weatherData.description},
                       💧 {weatherData.humidity}%, 🌬️ {weatherData.windSpeed}m/s
-                      {weatherData.description.includes('mock') && (
-                        <span className="text-yellow-400 ml-2">(Demo Mode)</span>
+                      {weatherData.description.includes("mock") && (
+                        <span className="text-yellow-400 ml-2">
+                          (Demo Mode)
+                        </span>
                       )}
                     </div>
                   )}
@@ -586,7 +602,7 @@ const Predict = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
                   <div className="flex items-center">
                     <Monitor className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-blue-400" />
-                    <label className="text-gray-200 text-xs sm:text-sm font-medium">
+                    <label className="text-gray-700 dark:text-gray-200 text-xs sm:text-sm font-medium">
                       Devices & Usage Minutes
                     </label>
                   </div>
@@ -632,7 +648,7 @@ const Predict = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="text-gray-200 text-xs sm:text-sm min-w-[80px] sm:min-w-[100px]">
+                      <div className="text-gray-700 dark:text-gray-200 text-xs sm:text-sm min-w-[80px] sm:min-w-[100px]">
                         {device.hours} minutes
                       </div>
                     </div>
@@ -675,15 +691,15 @@ const Predict = () => {
                     Live System Data
                   </h4>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="text-gray-300">
+                    <div className="text-gray-700 dark:text-gray-300">
                       Efficiency:{" "}
-                      <span className="text-green-400">
+                      <span className="text-green-600 dark:text-green-400">
                         {realTimeData.efficiency?.toFixed(1)}%
                       </span>
                     </div>
-                    <div className="text-gray-300">
+                    <div className="text-gray-700 dark:text-gray-300">
                       Anomalies:{" "}
-                      <span className="text-yellow-400">
+                      <span className="text-yellow-600 dark:text-yellow-400">
                         {realTimeData.anomalies || 0}
                       </span>
                     </div>
@@ -709,12 +725,12 @@ const Predict = () => {
                     </Button>
                   </div>
                   {locationData ? (
-                    <div className="text-xs text-gray-300">
+                    <div className="text-xs text-gray-700 dark:text-gray-300">
                       Lat: {locationData.lat.toFixed(2)}, Lon:{" "}
                       {locationData.lon.toFixed(2)}
                     </div>
                   ) : (
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
                       Click to get location
                     </div>
                   )}
@@ -725,7 +741,7 @@ const Predict = () => {
                     <h4 className="text-sm font-medium text-orange-400 mb-2">
                       Peak Hours
                     </h4>
-                    <div className="text-xs text-gray-300">
+                    <div className="text-xs text-gray-700 dark:text-gray-300">
                       <div>
                         Status: {peakHours.isPeak ? "Peak Time" : "Off-Peak"}
                       </div>
@@ -742,10 +758,10 @@ const Predict = () => {
                     <h4 className="text-sm font-medium text-purple-400 mb-2">
                       Cost Estimate
                     </h4>
-                    <div className="text-lg font-bold text-white">
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">
                       ₹{costEstimate}
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
                       Daily cost estimate
                     </div>
                   </div>
@@ -758,7 +774,10 @@ const Predict = () => {
                     </h4>
                     <div className="space-y-1">
                       {energyTips.map((tip, index) => (
-                        <div key={index} className="text-xs text-gray-300">
+                        <div
+                          key={index}
+                          className="text-xs text-gray-700 dark:text-gray-300"
+                        >
                           • {tip}
                         </div>
                       ))}
@@ -769,7 +788,7 @@ const Predict = () => {
 
               {/* Quick Fill Buttons */}
               <div className="mt-4">
-                <label className="text-gray-200 text-sm font-medium mb-2 block">
+                <label className="text-gray-700 dark:text-gray-200 text-sm font-medium mb-2 block">
                   Quick Fill
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -900,6 +919,26 @@ const Predict = () => {
                   >
                     High Usage
                   </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setTemperature(25);
+                      setHouseholdSize(6);
+                      setSeason("Summer");
+                      setDevices([
+                        { device: "AC", hours: 720 },
+                        { device: "Refrigerator", hours: 1440 },
+                        { device: "Lights", hours: 600 },
+                        { device: "TV", hours: 300 },
+                        { device: "WashingMachine", hours: 120 },
+                      ]);
+                    }}
+                    className="text-xs"
+                  >
+                    Moderate Usage
+                  </Button>
                 </div>
               </div>
 
@@ -926,7 +965,7 @@ const Predict = () => {
                   ) : (
                     <>
                       <Zap className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                      Predict Consumption
+                      Predict
                     </>
                   )}
                 </Button>
@@ -961,23 +1000,23 @@ const Predict = () => {
         {/* Prediction Results */}
         {prediction && (
           <section data-aos="fade-up" data-aos-duration="1000">
-            <Card className="bg-white/5 border-white/10">
+            <Card className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10">
               <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="text-lg sm:text-xl">
+                <CardTitle className="text-lg sm:text-xl text-gray-900 dark:text-white">
                   <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 mr-2 inline-block" />
                   Predicted Energy Consumption
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 sm:p-6">
                 <div className="mb-4">
-                  <div className="text-gray-300 mb-1 text-sm sm:text-base">
+                  <div className="text-gray-700 dark:text-gray-300 mb-1 text-sm sm:text-base">
                     Estimated Consumption:
-                    <span className="font-bold text-white ml-1">
+                    <span className="font-bold text-gray-900 dark:text-white ml-1">
                       {prediction.value} kWh
                     </span>
                   </div>
                   <Progress value={prediction.confidence} className="mb-2" />
-                  <div className="flex items-center justify-between text-xs sm:text-sm text-gray-400">
+                  <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     <span>Confidence Level</span>
                     <span>{prediction.confidence}%</span>
                   </div>
@@ -991,19 +1030,19 @@ const Predict = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-base sm:text-lg font-bold text-white mb-3">
+                  <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-3">
                     Factors Influencing Prediction
                   </h4>
                   <ul className="list-none pl-0">
                     {prediction.factors.map((factor, index) => (
                       <li
                         key={index}
-                        className="flex items-center justify-between py-2 border-b border-white/10"
+                        className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-white/10"
                       >
-                        <span className="text-gray-300 text-xs sm:text-sm">
+                        <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                           {factor.name}
                         </span>
-                        <span className="text-green-400 text-xs sm:text-sm">
+                        <span className="text-green-600 dark:text-green-400 text-xs sm:text-sm">
                           {factor.value}%
                         </span>
                       </li>
@@ -1022,23 +1061,28 @@ const Predict = () => {
             data-aos="fade-up"
             data-aos-duration="1000"
           >
-            <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
               Model Comparison
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {comparison.map((model, index) => (
-                <Card key={index} className="bg-white/5 border-white/10">
+                <Card
+                  key={index}
+                  className="bg-white/80 dark:bg-white/5 border-gray-200 dark:border-white/10"
+                >
                   <CardContent className="p-4 sm:p-6">
-                    <h4 className="text-sm sm:text-lg font-bold text-white mb-2">
+                    <h4 className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white mb-2">
                       {model.model}
                     </h4>
-                    <div className="text-gray-300 mb-2 text-xs sm:text-sm">
+                    <div className="text-gray-700 dark:text-gray-300 mb-2 text-xs sm:text-sm">
                       Accuracy:{" "}
-                      <span className="text-green-400">{model.accuracy}%</span>
+                      <span className="text-green-600 dark:text-green-400">
+                        {model.accuracy}%
+                      </span>
                     </div>
-                    <div className="text-gray-300 text-xs sm:text-sm">
+                    <div className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                       Prediction:{" "}
-                      <span className="text-blue-400">
+                      <span className="text-blue-600 dark:text-blue-400">
                         {model.prediction} kWh
                       </span>
                     </div>

@@ -1,302 +1,313 @@
 # Energy Consumption Prediction Project
 
-A comprehensive machine learning system for predicting energy consumption based on temporal factors and weather conditions. This project helps utilities and businesses optimize energy usage, reduce costs, and manage resources more sustainably.
+A comprehensive machine learning system for predicting energy consumption based on temporal factors, weather conditions, and household characteristics. This project helps users optimize energy usage, reduce costs, and manage resources more sustainably.
 
 ## 🎯 Project Overview
 
 This project implements regression and machine learning models to predict daily power consumption using:
+
 - **Temporal factors**: time of day, day of week, seasonal patterns
 - **Weather data**: temperature, humidity, wind speed, solar radiation
-- **Multiple ML algorithms**: Linear Regression, Ridge, Lasso, Random Forest, Gradient Boosting
+- **Household data**: household size, appliance types, usage patterns
+- **Multiple ML algorithms**: Linear Regression, Random Forest, K-Nearest Neighbors
 
 ## 📁 Project Structure
 
 ```
-energyAI/
-├── frontend/          # Next.js React app
+energy-prediction/
+├── frontend/          # React + TypeScript + Vite app
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── about/        # About page components
+│   │   │   ├── ui/           # UI components (shadcn/ui)
+│   │   │   ├── AdvancedAnalytics.tsx
+│   │   │   ├── CostOptimization.tsx
+│   │   │   ├── RealTimeMonitoring.tsx
+│   │   │   └── Navigation.tsx
 │   │   ├── pages/
+│   │   │   ├── Home.tsx
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── Predict.tsx
+│   │   │   ├── About.tsx
+│   │   │   └── Team.tsx
 │   │   └── ...
 │   ├── public/
+│   │   ├── data/
+│   │   │   └── energy_dataset.csv
+│   │   └── TeamImage/
 │   ├── package.json
-│   └── ...other frontend files
+│   └── vite.config.ts
 ├── backend/           # Node.js Express API
 │   ├── src/
-│   │   └── server.js
+│   │   ├── server.js
+│   │   └── services/
+│   │       ├── analyticsService.js
+│   │       ├── alertService.js
+│   │       └── weatherService.js
 │   ├── package.json
-│   ├── database.db
-│   └── database_schema.sql
+│   ├── database_schema.sql
+│   └── .env
 ├── ml-model/          # ML model code
 │   ├── *.pkl         # Trained models
 │   ├── predict_api.py
 │   ├── train_models.py
+│   ├── advanced_models.py
 │   └── requirements.txt
+├── mobile-app/        # React Native app (optional)
+│   └── ...
 ├── .gitignore
 └── README.md
 ```
 
 ## 🚀 Quick Start
 
-### 1. One-Click Installation
+### Prerequisites
+
+- **Python**: 3.8 or higher
+- **Node.js**: 16.0 or higher
+- **PostgreSQL**: 12+ (for database)
+- **npm** or **yarn** (package manager)
+
+### 1. Installation
 
 ```bash
-# Windows - Install all dependencies
-install.bat
+# Clone the repository
+git clone <repository-url>
+cd "energy pridiction"
 
-# Or install manually:
-# Frontend
-cd frontend && npm install
+# Install Frontend Dependencies
+cd frontend
+npm install
 
-# Backend
-cd backend && npm install
+# Install Backend Dependencies
+cd ../backend
+npm install
 
-# ML Model
-cd ml-model && pip install -r requirements.txt
-
-# Mobile App (Optional)
-cd mobile-app && npm install
+# Install ML Model Dependencies
+cd ../ml-model
+pip install -r requirements.txt
 ```
 
-### 2. Start All Services
+### 2. Database Setup
 
-```bash
-# Windows - Start everything
-start-all.bat
+1. Install PostgreSQL and create a database:
 
-# Or start individually:
-# Frontend: cd frontend && npm run dev
-# Backend: cd backend && npm start  
-# ML Model: cd ml-model && python predict_api.py
-# Mobile: cd mobile-app && npm start
+```sql
+CREATE DATABASE energyai;
 ```
 
-### 3. Run Individual Services
+2. Update backend `.env` file with your database credentials:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/energyai
+JWT_SECRET=your_jwt_secret_key
+WEATHER_API_KEY=your_openweather_api_key
+```
+
+3. Run the database schema:
 
 ```bash
-# Start Frontend (in frontend directory)
+cd backend
+psql -U postgres -d energyai -f database_schema.sql
+```
+
+### 3. Start All Services
+
+**Terminal 1 - Frontend:**
+
+```bash
+cd frontend
 npm run dev
+```
 
-# Start Backend (in backend directory)
+Frontend will run on `http://localhost:5173`
+
+**Terminal 2 - Backend:**
+
+```bash
+cd backend
 npm start
+```
 
-# Run ML predictions (in ml-model directory)
+Backend will run on `http://localhost:3001`
+
+**Terminal 3 - ML Model API:**
+
+```bash
+cd ml-model
 python predict_api.py
 ```
 
-### 3. Development Mode
-
-```bash
-# Frontend development server
-cd frontend && npm run dev
-
-# Backend development server
-cd backend && npm run dev
-```
+ML API will run on `http://localhost:5000`
 
 ## 📊 Features
 
-### 🤖 Advanced Machine Learning
-- **Neural Networks**: Deep learning for complex patterns
-- **Gradient Boosting**: XGBoost and LightGBM models
-- **Time Series Models**: LSTM and Prophet forecasting
-- **Ensemble Methods**: Multi-model predictions with confidence intervals
-- **AutoML**: Automated model selection and hyperparameter tuning
-- **Multi-horizon Forecasting**: 1-day, 7-day, and 30-day predictions
+### 🤖 Machine Learning Models
 
-### 📱 Real-Time Monitoring
-- **Live Dashboard**: WebSocket-powered real-time updates
-- **Anomaly Detection**: AI-powered unusual pattern identification
-- **Smart Alerts**: Email/SMS notifications for thresholds
-- **Mobile App**: React Native companion app
-- **Offline Capability**: Local predictions when internet is unavailable
+- **Linear Regression**: Baseline model with 85.2% accuracy
+- **Random Forest**: Ensemble model with 87.6% accuracy
+- **K-Nearest Neighbors**: Non-parametric model for pattern recognition
+- **Feature Engineering**: Automatic feature extraction from temporal and weather data
 
-### 💰 Cost Optimization
-- **Time-of-Use Analysis**: Peak/off-peak rate optimization
-- **Device Scheduling**: Automated load shifting recommendations
-- **Budget Management**: Cost threshold monitoring and alerts
-- **ROI Calculator**: Energy-saving investment analysis
-- **Peer Comparison**: Benchmark against similar users
+### 📱 Web Application Features
+
+- **Interactive Dashboard**: Real-time energy consumption monitoring with charts
+- **Prediction Interface**: User-friendly form to input parameters and get predictions
+- **Real-Time Monitoring**: Live updates of energy consumption data
+- **Advanced Analytics**: Detailed insights and pattern analysis
+- **Cost Optimization**: Time-of-use analysis and savings recommendations
+- **Weather Integration**: Real-time weather data for accurate predictions
+- **User Authentication**: Secure login and profile management
+
+### 📈 Analytics & Visualization
+
+- **Weekly Consumption Charts**: Bar charts showing daily energy usage
+- **Monthly Trends**: Prediction vs actual consumption comparison
+- **Appliance Breakdown**: Pie charts showing energy usage by appliance
+- **Cost Analysis**: Daily costs and savings visualization
+- **Efficiency Scoring**: Performance benchmarking metrics
 
 ### 🌍 Sustainability Features
+
 - **Carbon Footprint Tracking**: CO2 emissions calculation
-- **Green Energy Integration**: Solar/wind production forecasting
-- **Sustainability Scoring**: Environmental impact metrics
-- **ESG Reporting**: Corporate sustainability dashboards
+- **Energy Savings Tips**: Personalized recommendations
+- **Peak Hours Analysis**: Optimal usage time suggestions
 
-### 🔧 Advanced Analytics
-- **Predictive Insights**: AI-generated recommendations
-- **Pattern Recognition**: Seasonal and behavioral analysis
-- **Efficiency Scoring**: Performance benchmarking
-- **What-if Scenarios**: Impact modeling for changes
-- **Export & Reporting**: PDF/Excel reports with scheduling
+## 📈 Model Performance
 
-### 🏠 Smart Home Integration
-- **IoT Device Connectivity**: Smart meter and sensor integration
-- **Weather API Integration**: Real-time weather data
-- **Multi-tenant Support**: Organization-level management
-- **Role-based Access**: User permission management
+The system achieves the following accuracy metrics:
 
-### Generated Features
-- Temperature effects (heating/cooling needs)
-- Seasonal patterns (winter/summer peaks)
-- Weekend vs weekday differences
-- Humidity and solar radiation impacts
-- Interaction terms (temperature × humidity)
-
-## 📈 Expected Results
-
-The system typically achieves:
-- **Gradient Boosting R²**: ~0.886 (88.6% accuracy)
 - **Random Forest R²**: ~0.876 (87.6% accuracy)
-- **Linear Models R²**: ~0.852 (85.2% accuracy)
-- **RMSE**: 120-150 kWh for synthetic data
+- **Linear Regression R²**: ~0.852 (85.2% accuracy)
+- **KNN Model**: Comparable performance for pattern recognition
 
-## 🔧 Usage Examples
+## 🔧 Technology Stack
 
-### Basic Prediction
+### Frontend
 
-```python
-from energy_prediction import EnergyConsumptionPredictor
+- **React 18**: Modern UI library
+- **TypeScript**: Type-safe development
+- **Vite**: Fast build tool and dev server
+- **Tailwind CSS**: Utility-first CSS framework
+- **Recharts**: Data visualization library
+- **React Router**: Client-side routing
+- **shadcn/ui**: High-quality UI components
+- **Socket.io Client**: Real-time data updates
 
-# Initialize predictor
-predictor = EnergyConsumptionPredictor()
+### Backend
 
-# Generate synthetic data (or load your own)
-data = predictor.generate_synthetic_data(n_samples=1000)
+- **Node.js**: JavaScript runtime
+- **Express**: Web framework
+- **PostgreSQL**: Relational database
+- **Socket.io**: WebSocket for real-time communication
+- **JWT**: Authentication tokens
+- **bcryptjs**: Password hashing
+- **Nodemailer**: Email notifications
 
-# Prepare features and train models
-X = predictor.prepare_features(data)
-y = data['energy_consumption']
+### Machine Learning
 
-# Train all models
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-predictor.train_models(X_train, y_train)
+- **Python 3.8+**: Programming language
+- **Scikit-learn**: ML algorithms (Linear Regression, Random Forest, KNN)
+- **Pandas**: Data manipulation
+- **NumPy**: Numerical computing
+- **Flask**: ML model API server
+- **Pickle**: Model serialization
 
-# Evaluate and compare models
-results = predictor.evaluate_models(X_test, y_test, X.columns.tolist())
-print(results)
-```
+### Data
 
-### Data Analysis
+- **Kaggle Datasets**: Real-world energy consumption data
+- **CSV Processing**: Data import and feature engineering
+- **Weather API**: OpenWeatherMap integration
 
-```python
-from data_analysis import analyze_energy_data
+## 📋 Dataset Information
 
-# Perform comprehensive analysis
-analyzer = analyze_energy_data(data)
-```
+The project uses real-world energy consumption data from Kaggle:
 
-## 📋 System Requirements
+- **Source**: Household Power Consumption Dataset
+- **Features**:
+  - Date and Time
+  - Outdoor Temperature
+  - Household Size
+  - Appliance Type
+  - Season
+  - Energy Consumption (kWh)
+- **Format**: CSV
+- **Processing**: Real-time feature engineering and preprocessing
 
-### Minimum Requirements
-- **Python**: 3.8 or higher
-- **Node.js**: 16.0 or higher
-- **Memory**: 4GB RAM minimum (8GB recommended)
-- **Storage**: 2GB for all dependencies
-- **OS**: Windows 10/11, macOS 10.15+, or Linux Ubuntu 18.04+
-- **Database**: PostgreSQL 12+ (included in setup)
+## 🎛️ Configuration
 
-### Recommended for Production
-- **Memory**: 16GB RAM
-- **Storage**: 10GB SSD
-- **CPU**: 4+ cores
-- **Network**: Stable internet for weather API
-- **GPU**: NVIDIA GPU for advanced ML models (optional)
+### Environment Variables
 
-### Mobile Development (Optional)
-- **React Native CLI**: Latest version
-- **Android Studio**: For Android development
-- **Xcode**: For iOS development (macOS only)
-- **Expo CLI**: For rapid prototyping
+Create a `.env` file in the `backend` directory:
 
-## 🔬 Data Schema
-
-The system expects/generates data with these columns:
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `date` | datetime | Date of measurement |
-| `temperature` | float | Temperature in Celsius |
-| `humidity` | float | Humidity percentage (0-100) |
-| `wind_speed` | float | Wind speed in m/s |
-| `solar_radiation` | float | Solar radiation in W/m² |
-| `energy_consumption` | float | Daily energy consumption in kWh |
-| `is_weekend` | int | 1 if weekend, 0 if weekday |
-| `season` | string | Winter/Spring/Summer/Fall |
-
-## 🎛️ Configuration Options
-
-### Environment Variables (.env)
-```bash
+```env
 # Database
 DATABASE_URL=postgresql://user:password@localhost:5432/energyai
 JWT_SECRET=your_jwt_secret_key
 
-# Email Alerts
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
-
 # Weather API
 WEATHER_API_KEY=your_openweather_api_key
 
-# ML Model Settings
-MODEL_RETRAIN_INTERVAL=7  # days
-PREDICTION_CONFIDENCE_THRESHOLD=0.8
-ANOMALY_DETECTION_SENSITIVITY=2.0
+# Email (Optional)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
 ```
 
-### Advanced ML Configuration
-- **Neural Network**: Hidden layers, activation functions, learning rate
-- **Ensemble Models**: Model weights, voting strategies
-- **Time Series**: Seasonality detection, trend analysis
-- **Feature Engineering**: Custom feature creation and selection
+### ML Model Configuration
 
-### Real-time Settings
-- **Update Frequency**: Data refresh intervals
-- **Alert Thresholds**: Consumption and cost limits
-- **Notification Preferences**: Email, SMS, push notifications
-- **Data Retention**: Historical data storage duration
+Models are trained using:
 
-## 📊 Advanced Visualizations
+- **Train/Test Split**: 80/20
+- **Feature Engineering**: Automatic temporal and categorical encoding
+- **Model Persistence**: Saved as `.pkl` files for fast loading
 
-### Dashboard Components
-1. **Real-time Monitoring**: Live consumption tracking with WebSocket updates
-2. **Cost Optimization**: Time-of-use rate analysis and savings calculator
-3. **Advanced Analytics**: AI-generated insights and recommendations
-4. **Efficiency Scoring**: Performance benchmarking with peer comparison
-5. **Carbon Footprint**: Environmental impact tracking and goals
-6. **Anomaly Detection**: Unusual pattern identification with severity levels
+## 📱 Pages & Routes
 
-### Interactive Charts
-- **Multi-horizon Forecasts**: 1-day, 7-day, 30-day predictions
-- **Device Breakdown**: Consumption by appliance with optimization tips
-- **Weather Correlation**: Temperature vs consumption analysis
-- **Cost Analysis**: Peak/off-peak usage patterns
-- **Efficiency Trends**: Historical performance improvements
-- **Mobile Responsive**: Optimized for all screen sizes
+- **Home** (`/`): Landing page with features and stats
+- **Dashboard** (`/dashboard`): Main analytics dashboard
+- **Predict** (`/predict`): Energy consumption prediction interface
+- **About** (`/about`): Project information and methodology
+- **Team** (`/team`): Team members information
+- **Profile** (`/profile`): User profile management
 
-### Export Options
-- **PDF Reports**: Automated monthly/quarterly reports
-- **CSV Data**: Raw data export for external analysis
-- **API Access**: Programmatic data retrieval
-- **Email Scheduling**: Automated report delivery
+## 👥 Team
+
+- **Kaushal**: Lead Developer - ML Engineering & Full Stack Development
+- **Bansi**: Data Scientist - Energy Analytics & Predictive Modeling
+- **Drashti**: ML Engineer - Model Optimization & Deployment
+- **Hasti**: Business Analyst - Energy Domain & Strategy
+
+## 🔬 API Endpoints
+
+### Backend API (Port 3001)
+
+- `GET /api/health` - Health check
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/analytics` - Analytics data
+- `GET /api/weather` - Weather data
+- `POST /api/predictions` - Save predictions
+- WebSocket: Real-time data updates
+
+### ML Model API (Port 5000)
+
+- `POST /predict` - Get energy consumption prediction
+- `GET /health` - ML API health check
 
 ## 🚨 Troubleshooting
 
 ### Installation Issues
 
 1. **Node.js version conflicts**:
+
    ```bash
-   # Use Node Version Manager
    nvm install 18
    nvm use 18
    ```
 
 2. **Python dependency conflicts**:
+
    ```bash
-   # Create virtual environment
    python -m venv energy_ai_env
    energy_ai_env\Scripts\activate  # Windows
    source energy_ai_env/bin/activate  # Linux/Mac
@@ -305,69 +316,51 @@ ANOMALY_DETECTION_SENSITIVITY=2.0
 
 3. **PostgreSQL connection issues**:
    - Ensure PostgreSQL is running
-   - Check database credentials in .env file
+   - Check database credentials in `.env` file
    - Verify firewall settings
 
 ### Runtime Issues
 
-4. **WebSocket connection failures**:
-   - Check CORS settings in backend
-   - Verify port 3001 is available
-   - Disable browser ad blockers
+4. **CORS errors**:
+
+   - Check CORS settings in `backend/src/server.js`
+   - Verify frontend URL in allowed origins
 
 5. **ML model loading errors**:
+
    ```bash
-   # Retrain models if corrupted
    cd ml-model
    python train_models.py
-   python advanced_models.py
    ```
 
-6. **Mobile app build issues**:
-   ```bash
-   # Clear React Native cache
-   npx react-native start --reset-cache
-   ```
-
-### Performance Optimization
-
-7. **Slow predictions**:
-   - Enable GPU acceleration for neural networks
-   - Reduce model complexity in advanced_models.py
-   - Use model caching for repeated predictions
-
-8. **High memory usage**:
-   - Limit historical data retention
-   - Use data pagination for large datasets
-   - Enable garbage collection in Python models
+6. **Database connection errors**:
+   - Verify PostgreSQL is running
+   - Check connection string in `.env`
+   - Ensure database exists
 
 ## ✅ Implemented Features
 
-- [x] **Real-time Monitoring**: Live energy consumption tracking
-- [x] **Advanced ML Models**: Neural networks, gradient boosting, ensemble methods
-- [x] **Weather Integration**: Real-time weather data for predictions
-- [x] **Cost Optimization**: Time-of-use analysis and recommendations
-- [x] **Mobile App**: React Native companion application
-- [x] **Smart Alerts**: Email notifications and threshold monitoring
-- [x] **Analytics Dashboard**: Advanced insights and recommendations
-- [x] **Export Functionality**: CSV/PDF data export
-- [x] **Anomaly Detection**: AI-powered unusual pattern identification
-- [x] **Multi-horizon Forecasting**: 1-day, 7-day, 30-day predictions
-- [x] **Carbon Footprint**: CO2 emissions tracking
-- [x] **Database Integration**: PostgreSQL with user management
-- [x] **API Endpoints**: RESTful API for all features
-- [x] **WebSocket Support**: Real-time data streaming
+- [x] **User Authentication**: Registration and login system
+- [x] **Energy Prediction**: ML-based consumption forecasting
+- [x] **Real-time Dashboard**: Live monitoring with charts
+- [x] **Advanced Analytics**: Pattern analysis and insights
+- [x] **Cost Optimization**: Savings recommendations
+- [x] **Weather Integration**: Real-time weather data
+- [x] **Interactive Visualizations**: Charts and graphs
+- [x] **Responsive Design**: Mobile-friendly interface
+- [x] **Dark Mode**: Theme switching support
+- [x] **Team Page**: Team member information
+- [x] **About Page**: Project documentation
 
-## 🔮 Upcoming Features
+## 🔮 Future Enhancements
 
+- [ ] **Mobile App**: Full React Native implementation
+- [ ] **Advanced ML Models**: Neural networks, LSTM, Prophet
+- [ ] **Export Functionality**: PDF/CSV report generation
+- [ ] **Email Notifications**: Automated alerts
+- [ ] **Multi-tenant Support**: Organization-level management
+- [ ] **IoT Integration**: Smart meter connectivity
 - [ ] **Edge Computing**: Local processing capabilities
-- [ ] **Blockchain Integration**: Energy trading and certificates
-- [ ] **AR/VR Visualization**: Immersive energy data exploration
-- [ ] **Voice Assistant**: Alexa/Google Home integration
-- [ ] **Predictive Maintenance**: Equipment failure prediction
-- [ ] **Grid Integration**: Utility company data exchange
-- [ ] **Docker Deployment**: Containerized application
-- [ ] **Kubernetes Orchestration**: Scalable cloud deployment
 
 ## 📝 License
 
@@ -376,37 +369,18 @@ This project is open source and available under the MIT License.
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📞 Support & Community
+## 📞 Support
 
-### Getting Help
-- 📖 **Documentation**: Comprehensive guides in `/docs` folder
-- 🐛 **Bug Reports**: Create GitHub issues with detailed logs
-- 💬 **Discussions**: Join our community forum
-- 📧 **Email Support**: support@energyai.com
+For issues, questions, or contributions:
 
-### Development
-- 🔧 **API Documentation**: Available at `/api/docs` when running
-- 🧪 **Testing**: Run `npm test` in each component
-- 🚀 **Deployment**: Docker and Kubernetes configs included
-- 📊 **Monitoring**: Built-in performance metrics
-
-### Contributing
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-### Roadmap
-- **Q1 2024**: Edge computing and offline capabilities
-- **Q2 2024**: Blockchain integration for energy trading
-- **Q3 2024**: AR/VR visualization features
-- **Q4 2024**: Voice assistant integration
+- Create a GitHub issue
+- Contact the development team
+- Check the documentation in the codebase
 
 ---
 

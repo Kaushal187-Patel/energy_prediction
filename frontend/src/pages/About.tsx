@@ -8,7 +8,7 @@ import TechStack from "../components/about/TechStack";
 
 const About = () => {
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-green-500/10 via-blue-500/10 to-purple-500/10 dark:from-transparent dark:via-transparent dark:to-transparent">
       <div className="max-w-7xl mx-auto">
         <div data-aos="fade-up" data-aos-duration="1000">
           <HeroSection />
