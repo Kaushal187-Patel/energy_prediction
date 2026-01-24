@@ -33,7 +33,7 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
-const port = 3001;
+const port = Number.parseInt(process.env.PORT || '3001', 10);
 
 // CORS configuration
 app.use(cors({
@@ -73,13 +73,23 @@ app.post('/api/test', (req, res) => {
   });
 });
 
+const useSsl = process.env.PGSSLMODE === 'require';
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: useSsl ? { rejectUnauthorized: false } : false,
+    }
+  : {
+      user: process.env.PGUSER || 'postgres',
+      host: process.env.PGHOST || '127.0.0.1',
+      database: process.env.PGDATABASE || 'energyai',
+      password: process.env.PGPASSWORD || '',
+      port: process.env.PGPORT ? Number.parseInt(process.env.PGPORT, 10) : 5432,
+      ssl: useSsl ? { rejectUnauthorized: false } : false,
+    };
+
 const pool = new Pool({
-  user: 'postgres',
-  host: '127.0.0.1',
-  database: 'energyai',
-  password: 'Kaushal@8697',
-  port: 5432,
-  ssl: false,
+  ...poolConfig,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
